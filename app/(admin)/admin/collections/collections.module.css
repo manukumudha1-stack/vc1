@@ -1,0 +1,83 @@
+.collName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1C1208;
+}
+
+.collDesc {
+  font-size: 14px;
+  color: #8C7B6B;
+  margin-top: 2px;
+}
+
+.slug {
+  font-size: 14px;
+  font-family: 'SF Mono', 'Fira Mono', monospace;
+  background: rgba(201, 168, 76, 0.1);
+  color: #7A6030;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btnEdit {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 4px;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.btnEdit:hover {
+  background: rgba(201, 168, 76, 0.08);
+  border-color: rgba(201, 168, 76, 0.7);
+}
+
+.btnDelete {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #B04040;
+  background: none;
+  border: 1px solid rgba(176, 64, 64, 0.3);
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.btnDelete:hover:not(:disabled) {
+  background: rgba(176, 64, 64, 0.06);
+  border-color: rgba(176, 64, 64, 0.6);
+}
+
+.btnDelete:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.empty {
+  padding: 48px;
+  text-align: center;
+  color: #8C7B6B;
+  font-size: 14px;
+}
+
+.empty a {
+  color: #C9A84C;
+  text-decoration: underline;
+}

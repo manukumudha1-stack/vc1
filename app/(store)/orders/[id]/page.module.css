@@ -1,0 +1,193 @@
+/* ===== ORDER CONFIRMATION ===== */
+.page {
+  min-height: 100vh;
+  padding: 60px var(--margin-desktop) 80px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(26, 107, 107, 0.1);
+  border: 2px solid rgba(26, 107, 107, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent-peacock-teal);
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* ===== BODY ===== */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+/* ===== CARD ===== */
+.card {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  background: var(--color-background-ivory);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* ===== META ===== */
+.metaRow {
+  display: flex;
+  gap: 40px;
+  padding: 20px 0;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaKey {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.metaVal {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* ===== ITEMS ===== */
+.items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 8px 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+
+.item:last-child {
+  border-bottom: 0;
+}
+
+.itemThumb {
+  width: 60px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+}
+
+.itemInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== TOTALS ===== */
+.totals {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.totalGrand {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  padding-top: 6px;
+}
+
+.totalKey {
+  color: var(--color-text-secondary);
+}
+
+/* ===== ADDRESS ===== */
+.addrName {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.addrLine {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== CTAS ===== */
+.ctas {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .page {
+    padding: 40px var(--margin-mobile) 60px;
+  }
+
+  .card {
+    padding: 24px 20px;
+  }
+
+  .metaRow {
+    gap: 24px;
+  }
+}

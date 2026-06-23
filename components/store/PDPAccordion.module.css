@@ -1,0 +1,59 @@
+.accordion {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  border-top: 1px solid var(--hairline-soft);
+}
+
+.item:last-child {
+  border-bottom: 1px solid var(--hairline-soft);
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px 0;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.trigger:hover {
+  opacity: 0.75;
+}
+
+.triggerLabel {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.chevron {
+  color: var(--color-text-secondary);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  color: var(--color-text-secondary);
+  transform: rotate(180deg);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+
+.panel {
+  padding-bottom: 20px;
+}
+
+.panelText {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+  white-space: pre-line;
+}

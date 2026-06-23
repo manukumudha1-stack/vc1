@@ -1,0 +1,270 @@
+/* ===== CART DRAWER ===== */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 18, 8, 0.55);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  backdrop-filter: blur(2px);
+}
+
+.backdropVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: 100vw;
+  background: var(--color-background-primary);
+  z-index: 210;
+  transform: translateX(100%);
+  transition: transform 0.38s cubic-bezier(.4, 0, .2, 1);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--hairline);
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+/* ===== HEAD ===== */
+.head {
+  display: flex;
+  align-items: center;
+  padding: 24px 28px;
+  gap: 12px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+
+.count {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-primary);
+  transition: opacity 0.2s;
+  margin-left: auto;
+}
+
+.closeBtn:hover {
+  opacity: 0.6;
+}
+
+/* ===== BODY ===== */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--hairline) transparent;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  gap: 12px;
+}
+
+.emptyIcon {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+  margin-bottom: 8px;
+}
+
+.emptyTitle {
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.emptyText {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* ===== ITEM LIST ===== */
+.itemList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+
+.item:last-child {
+  border-bottom: 0;
+}
+
+.itemImage {
+  width: 80px;
+  height: 107px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.itemDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-text-primary);
+}
+
+.itemPrice {
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* ===== QTY CONTROL ===== */
+.qtyControl {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.qtyBtn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--color-text-primary);
+  transition: background 0.2s;
+  background: none;
+}
+
+.qtyBtn:hover {
+  background: var(--color-background-secondary);
+}
+
+.qtyNum {
+  width: 32px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  border-left: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.removeBtn {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+}
+
+.removeBtn:hover {
+  color: var(--color-accent-temple-red);
+}
+
+/* ===== FOOTER ===== */
+.foot {
+  padding: 20px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subtotalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 16px 0 4px;
+}
+
+.subtotalLabel {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.subtotalAmt {
+  font-size: 20px;
+}
+
+.shippingNote {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+}
+
+.checkoutBtn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.continueBtn {
+  width: 100%;
+  border-color: var(--hairline);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.continueBtn:hover {
+  background: var(--color-background-secondary);
+  border-color: var(--hairline);
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 480px) {
+  .drawer {
+    width: 100vw;
+  }
+}

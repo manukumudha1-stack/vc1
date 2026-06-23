@@ -1,0 +1,126 @@
+.page {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100vh;
+  background: #FAF6EF;
+}
+
+.back {
+  font-size: 14px;
+  color: #8C7B6B;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back:hover { color: #C9A84C; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  color: #1C1208;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+.main { display: flex; flex-direction: column; gap: 20px; }
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+.card {
+  background: #FFF8EE;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  color: #1C1208;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C7B6B;
+  font-weight: 500;
+  padding: 0 0 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.table td {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(140, 123, 107, 0.1);
+  vertical-align: middle;
+}
+
+.table tr:last-child td { border-bottom: none; }
+
+.orderNum { font-weight: 600; font-size: 14px; font-family: monospace; color: #C9A84C; }
+.amount { color: #C9A84C; font-weight: 500; }
+.muted { color: #8C7B6B; font-size: 14px; }
+
+.infoRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(140, 123, 107, 0.1);
+}
+
+.infoRow:last-child { border-bottom: none; }
+
+.infoLabel {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C7B6B;
+}
+
+.infoValue { font-size: 13px; color: #1C1208; }
+
+.notesArea {
+  width: 100%;
+  min-height: 80px;
+  background: #FAF6EF;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 13px;
+  color: #1C1208;
+  resize: vertical;
+  font-family: inherit;
+}

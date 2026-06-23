@@ -1,0 +1,159 @@
+.page {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 100vh;
+  background: #FAF6EF;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: #1C1208;
+}
+
+.pageDate {
+  font-size: 14px;
+  color: #8C7B6B;
+  letter-spacing: 0.06em;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.section {
+  background: #FFF8EE;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  color: #1C1208;
+}
+
+.sectionLink {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.sectionLink:hover {
+  text-decoration: underline;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Chart */
+.chart {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8C7B6B;
+  font-weight: 500;
+  padding: 0 0 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.table td {
+  padding: 12px 0;
+  color: #1C1208;
+  border-bottom: 1px solid rgba(140, 123, 107, 0.15);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.orderNum {
+  font-weight: 500;
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.muted {
+  color: #8C7B6B;
+}
+
+.amount {
+  color: #C9A84C;
+  font-weight: 500;
+}
+
+/* Low stock list */
+.stockList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.stockItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(140, 123, 107, 0.15);
+  font-size: 13px;
+}
+
+.stockItem:last-child {
+  border-bottom: none;
+}
+
+.stockName {
+  color: #1C1208;
+  font-weight: 500;
+}
+
+.stockSku {
+  font-size: 13px;
+  color: #8C7B6B;
+}
+
+.stockQty {
+  font-size: 14px;
+  font-weight: 600;
+  color: #8B1A1A;
+}

@@ -1,0 +1,100 @@
+/* ===== PRODUCT CARD ===== */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== IMAGE ===== */
+.imageWrap {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-sm);
+}
+
+.ph {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.45s ease;
+}
+
+.phHover {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.imageWrap:hover .phHover {
+  opacity: 1;
+}
+
+/* ===== WISHLIST BUTTON ===== */
+.wishlistBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(250, 246, 239, 0.82);
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  color: var(--color-text-secondary);
+  transition: color 0.25s, background 0.25s;
+  z-index: 1;
+}
+
+.wishlistBtn:hover {
+  background: rgba(250, 246, 239, 0.96);
+  color: var(--color-accent-temple-red);
+}
+
+.wishlisted {
+  color: var(--color-accent-temple-red);
+  background: rgba(250, 246, 239, 0.96);
+}
+
+/* ===== CARD BODY ===== */
+.body {
+  padding: 14px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.urgency {
+  align-self: flex-start;
+}
+
+.nameLink {
+  display: block;
+}
+
+.name {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+  transition: color 0.2s;
+}
+
+.nameLink:hover .name {
+  color: var(--color-accent-gold);
+}
+
+.meta {
+  margin-top: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}

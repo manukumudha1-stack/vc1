@@ -1,0 +1,128 @@
+/* ===== FILTER SIDEBAR ===== */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: sticky;
+  top: 88px;
+}
+
+.sidebarHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+}
+
+.clearAll {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+  transition: opacity 0.2s;
+}
+
+.clearAll:hover {
+  opacity: 0.7;
+}
+
+/* ===== FILTER GROUP ===== */
+.group {
+  padding: 20px 0;
+}
+
+.groupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.groupHead:hover {
+  opacity: 0.75;
+}
+
+.groupTitle {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.chevron {
+  color: var(--color-text-secondary);
+  transition: transform 0.25s;
+}
+
+.chevronOpen {
+  color: var(--color-text-secondary);
+  transform: rotate(180deg);
+  transition: transform 0.25s;
+}
+
+.groupBody {
+  margin-top: 16px;
+}
+
+/* ===== COLOUR SWATCHES ===== */
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.swatch:hover {
+  transform: scale(1.12);
+}
+
+.swatchActive {
+  box-shadow: 0 0 0 2px var(--color-background-primary), 0 0 0 4px var(--color-accent-gold);
+}
+
+/* ===== CHECKLIST ===== */
+.checkList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkInput {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-accent-gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkText {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  transition: color 0.2s;
+}
+
+.checkLabel:hover .checkText {
+  color: var(--color-accent-gold);
+}

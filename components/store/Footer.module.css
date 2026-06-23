@@ -1,0 +1,148 @@
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--color-text-primary);
+  color: var(--color-background-primary);
+  padding: var(--spacing-2xl) 0 0;
+}
+
+.inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--margin-desktop);
+}
+
+/* ===== GRID ===== */
+.grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 64px;
+  padding-bottom: var(--spacing-xl);
+}
+
+/* ===== BRAND COLUMN ===== */
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.logo {
+  font-size: 42px;
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  color: var(--color-background-primary);
+  line-height: 1;
+}
+
+.tagline {
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(250, 246, 239, 0.65);
+  max-width: 200px;
+}
+
+.waBtn {
+  align-self: flex-start;
+  margin-top: 8px;
+  font-size: 13px;
+  padding: 12px 22px;
+  color: rgba(250, 246, 239, 0.85) !important;
+  border-color: rgba(250, 246, 239, 0.3) !important;
+}
+
+.waBtn:hover {
+  background: rgba(250, 246, 239, 0.08) !important;
+  border-color: rgba(250, 246, 239, 0.6) !important;
+}
+
+/* ===== LINK COLUMNS ===== */
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.colHead {
+  color: var(--color-accent-gold);
+  margin-bottom: 4px;
+}
+
+.colLinks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footerLink {
+  font-size: 13px;
+  color: rgba(250, 246, 239, 0.65);
+  letter-spacing: 0.02em;
+  transition: color 0.25s;
+  line-height: 1.4;
+}
+
+.footerLink:hover {
+  color: var(--color-background-primary);
+}
+
+/* ===== ASSURANCE STRIP ===== */
+.assurance {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 24px 0;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: rgba(250, 246, 239, 0.5);
+  text-transform: uppercase;
+}
+
+.dot {
+  color: var(--color-accent-gold);
+  opacity: 0.5;
+}
+
+/* ===== COPYRIGHT ===== */
+.copy {
+  padding: 20px 0 32px;
+  border-top: 1px solid rgba(250, 246, 239, 0.08);
+}
+
+.copy .caption {
+  color: rgba(250, 246, 239, 0.35);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+}
+
+@media (max-width: 600px) {
+  .inner {
+    padding: 0 var(--margin-mobile);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .assurance {
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .dot {
+    display: none;
+  }
+
+  .assurance span {
+    display: block;
+    width: 100%;
+  }
+}
