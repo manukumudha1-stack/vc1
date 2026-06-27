@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { connectDB } from '@/lib/db';
 import OrderModel from '@/lib/models/Order';
 import { formatINR } from '@/lib/utils';
+import OrderSearchBar from './OrderSearchBar';
 import styles from './orders.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -9,29 +11,51 @@ export const dynamic = 'force-dynamic';
 type Status = 'all' | 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
 
 const TABS: { label: string; value: Status }[] = [
-  { label: 'All', value: 'all' },
-  { label: 'Pending', value: 'pending' },
+  { label: 'All',       value: 'all' },
+  { label: 'Pending',   value: 'pending' },
   { label: 'Confirmed', value: 'confirmed' },
-  { label: 'Shipped', value: 'shipped' },
+  { label: 'Shipped',   value: 'shipped' },
   { label: 'Delivered', value: 'delivered' },
   { label: 'Cancelled', value: 'cancelled' },
 ];
 
 interface PageProps {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; from?: string; to?: string }>;
 }
 
 export default async function OrdersPage({ searchParams }: PageProps) {
-  const params = await searchParams;
+  const params       = await searchParams;
   const activeStatus = (params.status ?? 'all') as Status;
+  const q            = params.q?.trim() ?? '';
+  const from         = params.from ?? '';
+  const to           = params.to   ?? '';
 
   await connectDB();
 
-  const query = activeStatus !== 'all' ? { status: activeStatus } : {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const query: Record<string, any> = {};
+
+  if (activeStatus !== 'all') query.status = activeStatus;
+
+  if (q) {
+    const re = { $regex: q, $options: 'i' };
+    query.$or = [
+      { 'shippingAddress.name':  re },
+      { 'shippingAddress.phone': re },
+      { 'shippingAddress.email': re },
+      { 'items.sku':             re },
+    ];
+  }
+
+  if (from || to) {
+    query.createdAt = {};
+    if (from) query.createdAt.$gte = new Date(from);
+    if (to)   query.createdAt.$lte = new Date(to + 'T23:59:59.999Z');
+  }
+
   const orders = await OrderModel.find(query).sort({ createdAt: -1 }).lean();
   const serialized = JSON.parse(JSON.stringify(orders));
 
-  // Count per tab
   const counts = await Promise.all(
     TABS.map(tab =>
       tab.value === 'all'
@@ -40,17 +64,37 @@ export default async function OrdersPage({ searchParams }: PageProps) {
     )
   );
 
+  function tabHref(status: Status) {
+    const p = new URLSearchParams();
+    if (status !== 'all') p.set('status', status);
+    if (q)    p.set('q', q);
+    if (from) p.set('from', from);
+    if (to)   p.set('to', to);
+    const qs = p.toString();
+    return `/admin/orders${qs ? '?' + qs : ''}`;
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.topbar}>
         <h1 className={styles.pageTitle}>Orders</h1>
+        <span className={styles.resultCount}>
+          {serialized.length} result{serialized.length !== 1 ? 's' : ''}
+          {(q || from || to) ? ' (filtered)' : ''}
+        </span>
       </div>
 
+      {/* Search bar */}
+      <Suspense fallback={null}>
+        <OrderSearchBar q={q} from={from} to={to} />
+      </Suspense>
+
+      {/* Status tabs */}
       <div className={styles.tabs}>
         {TABS.map((tab, i) => (
           <Link
             key={tab.value}
-            href={tab.value === 'all' ? '/admin/orders' : `/admin/orders?status=${tab.value}`}
+            href={tabHref(tab.value)}
             className={`${styles.tab}${activeStatus === tab.value ? ' ' + styles.active : ''}`}
           >
             {tab.label}
@@ -67,7 +111,6 @@ export default async function OrdersPage({ searchParams }: PageProps) {
               <th>Date</th>
               <th>Customer</th>
               <th>Item(s)</th>
-              <th>Payment</th>
               <th>Amount</th>
               <th>Status</th>
               <th></th>
@@ -78,7 +121,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
               _id: string;
               orderNumber: string;
               createdAt: string;
-              shippingAddress: { name: string };
+              shippingAddress: { name: string; phone: string; email: string };
               items: { name: string; qty: number }[];
               payment: { method: string; status: string };
               total: number;
@@ -89,16 +132,21 @@ export default async function OrdersPage({ searchParams }: PageProps) {
                   <span className={styles.orderNum}>{o.orderNumber}</span>
                 </td>
                 <td className={styles.muted}>
-                  {new Date(o.createdAt).toLocaleDateString('en-IN')}
+                  {new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </td>
-                <td>{o.shippingAddress?.name || '—'}</td>
+                <td>
+                  <div className={styles.customerName}>{o.shippingAddress?.name || '—'}</div>
+                  {o.shippingAddress?.phone && (
+                    <div className={styles.customerSub}>{o.shippingAddress.phone}</div>
+                  )}
+                  {o.shippingAddress?.email && (
+                    <div className={styles.customerSub}>{o.shippingAddress.email}</div>
+                  )}
+                </td>
                 <td className={styles.muted}>
                   {o.items?.length === 1
                     ? o.items[0].name
                     : `${o.items?.length || 0} items`}
-                </td>
-                <td>
-                  <span className={styles.muted}>{o.payment?.method || 'COD'}</span>
                 </td>
                 <td className={styles.amount}>{formatINR(o.total)}</td>
                 <td>
@@ -113,7 +161,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
             ))}
             {serialized.length === 0 && (
               <tr>
-                <td colSpan={8}>
+                <td colSpan={7}>
                   <div className={styles.empty}>No orders found.</div>
                 </td>
               </tr>

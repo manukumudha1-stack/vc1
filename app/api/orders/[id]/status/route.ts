@@ -31,8 +31,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     const order = await OrderModel.findByIdAndUpdate(
       id,
-      { $set: { status } },
-      { new: true, runValidators: true }
+      {
+        $set:  { status },
+        $push: { statusHistory: { status, changedAt: new Date() } },
+      },
+      { new: true }
     );
 
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });

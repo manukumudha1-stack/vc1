@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import UserModel from '@/lib/models/User';
 import OrderModel from '@/lib/models/Order';
 import MetricCard from '@/components/admin/MetricCard';
+import CustomerDeleteButton from './CustomerDeleteButton';
 import { formatINR } from '@/lib/utils';
 import styles from './customers.module.css';
 
@@ -79,10 +80,11 @@ export default async function CustomersPage() {
                   <td>
                     <span className={`badge badge--${u.segment}`}>{u.segment}</span>
                   </td>
-                  <td>
+                  <td style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <Link href={`/admin/customers/${u._id}`} className={styles.btnView}>
                       View
                     </Link>
+                    <CustomerDeleteButton id={u._id} name={u.name} />
                   </td>
                 </tr>
               );

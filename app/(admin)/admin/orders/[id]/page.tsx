@@ -4,6 +4,7 @@ import { connectDB } from '@/lib/db';
 import OrderModel from '@/lib/models/Order';
 import { formatINR } from '@/lib/utils';
 import OrderStatusUpdate from './OrderStatusUpdate';
+import OrderNotes from './OrderNotes';
 import styles from './order-detail.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,28 @@ interface Props {
 }
 
 const STEPS = ['pending', 'confirmed', 'shipped', 'delivered'];
+
+const STATUS_LABELS: Record<string, string> = {
+  placed:    'Order Placed',
+  pending:   'Pending',
+  confirmed: 'Confirmed',
+  shipped:   'Shipped',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+};
+
+function fmtDateTime(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString('en-IN', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true,
+  });
+}
+
+function fmtDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
 
 function stepIndex(status: string) {
   return STEPS.indexOf(status);
@@ -28,6 +51,12 @@ export default async function OrderDetailPage({ params }: Props) {
   const o = JSON.parse(JSON.stringify(order));
   const isCancelled = o.status === 'cancelled';
   const currentStep = stepIndex(o.status);
+
+  // Build status → date map from history; pending falls back to createdAt
+  const statusDateMap: Record<string, string> = { pending: o.createdAt };
+  ((o.statusHistory ?? []) as { status: string; changedAt: string }[]).forEach((ev) => {
+    statusDateMap[ev.status] = ev.changedAt;
+  });
 
   return (
     <div className={styles.page}>
@@ -49,10 +78,12 @@ export default async function OrderDetailPage({ params }: Props) {
             {STEPS.map((step, i) => {
               const done = i <= currentStep;
               const current = i === currentStep;
+              const dateStr = statusDateMap[step];
               return (
                 <div key={step} className={`${styles.step}${done ? ' ' + styles.done : ''}${current ? ' ' + styles.current : ''}`}>
                   <div className={styles.stepDot}>{done ? '✓' : i + 1}</div>
                   <div className={styles.stepLabel}>{step.charAt(0).toUpperCase() + step.slice(1)}</div>
+                  {dateStr && <div className={styles.stepDate}>{fmtDate(dateStr)}</div>}
                 </div>
               );
             })}
@@ -111,6 +142,9 @@ export default async function OrderDetailPage({ params }: Props) {
             <div className={styles.cardTitle}>Update Status</div>
             <OrderStatusUpdate orderId={o._id} currentStatus={o.status} />
           </div>
+
+          {/* Notes */}
+          <OrderNotes orderId={o._id} initialNotes={o.notes ?? ''} />
         </div>
 
         <div className={styles.sidebar}>
@@ -163,13 +197,34 @@ export default async function OrderDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Notes */}
-          {o.notes && (
-            <div className={styles.card}>
-              <div className={styles.cardTitle}>Notes</div>
-              <p style={{ fontSize: 13, color: '#8C7B6B' }}>{o.notes}</p>
-            </div>
-          )}
+          {/* Activity Timeline */}
+          <div className={styles.card}>
+            <div className={styles.cardTitle}>Activity</div>
+            {(() => {
+              const history: { status: string; changedAt: string }[] =
+                o.statusHistory?.length
+                  ? o.statusHistory
+                  : [{ status: 'placed', changedAt: o.createdAt }];
+              return (
+                <div className={styles.timeline}>
+                  {history.map((ev, i) => (
+                    <div key={i} className={`${styles.timelineItem}${i === history.length - 1 ? ' ' + styles.timelineLast : ''}`}>
+                      <div className={styles.timelineDot} />
+                      <div className={styles.timelineBody}>
+                        <div className={styles.timelineStatus}>
+                          {STATUS_LABELS[ev.status] ?? ev.status}
+                        </div>
+                        <div className={styles.timelineTime}>
+                          {fmtDateTime(ev.changedAt)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+
         </div>
       </div>
     </div>

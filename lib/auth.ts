@@ -1,6 +1,7 @@
-import { NextAuthOptions, getServerSession, type Session } from 'next-auth';
-import { decode } from 'next-auth/jwt';
+import { NextAuthOptions, type Session } from 'next-auth';
+import { getToken } from 'next-auth/jwt';
 import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
@@ -89,23 +90,21 @@ export const authOptions: NextAuthOptions = {
 };
 
 export async function auth(): Promise<Session | null> {
-  const cookieStore = await cookies();
-  // next-auth uses __Secure- prefix in production (HTTPS), plain in dev
-  const token = cookieStore.get('next-auth.session-token')?.value
-             ?? cookieStore.get('__Secure-next-auth.session-token')?.value;
-  if (!token) return null;
   try {
-    const decoded = await decode({ token, secret: process.env.NEXTAUTH_SECRET! });
-    if (!decoded) return null;
+    const cookieStore = await cookies();
+    const cookieString = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
+    const req = new NextRequest('http://localhost', { headers: { cookie: cookieString } });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET! });
+    if (!token) return null;
     return {
       user: {
-        name:    (decoded.name  as string)   ?? null,
-        email:   (decoded.email as string)   ?? null,
-        image:   (decoded.picture as string) ?? null,
-        isAdmin: (decoded.isAdmin as boolean) ?? false,
-        role:    (decoded.role as string)    ?? 'customer',
+        name:    (token.name    as string)  ?? null,
+        email:   (token.email   as string)  ?? null,
+        image:   (token.picture as string)  ?? null,
+        isAdmin: (token.isAdmin as boolean) ?? false,
+        role:    (token.role    as string)  ?? 'customer',
       },
-      expires: new Date((decoded.exp as number) * 1000).toISOString(),
+      expires: new Date((token.exp as number) * 1000).toISOString(),
     } as Session;
   } catch {
     return null;

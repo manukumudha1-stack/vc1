@@ -11,6 +11,8 @@ import PDPAccordion from '@/components/store/PDPAccordion';
 import ProductCard from '@/components/store/ProductCard';
 import styles from './page.module.css';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -59,19 +61,6 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <div className={styles.page}>
-      {/* Breadcrumb */}
-      <div className={styles.breadcrumb}>
-        <Link href="/" className="link">Home</Link>
-        <span className={styles.sep}>›</span>
-        {collection && (
-          <>
-            <Link href={`/collections/${collection.slug}`} className="link">{collection.name}</Link>
-            <span className={styles.sep}>›</span>
-          </>
-        )}
-        <span className={styles.current}>{p.name}</span>
-      </div>
-
       {/* Main grid */}
       <div className={styles.main}>
         {/* Gallery */}
@@ -167,7 +156,7 @@ export default async function ProductPage({ params }: Props) {
       </div>
 
       {/* Story section */}
-      {p.story && (
+      {(p.story || p.makerImageUrl) && (
         <section className={styles.story}>
           <div className={styles.storyInner}>
             <p className="eyebrow">The story behind</p>
@@ -175,7 +164,12 @@ export default async function ProductPage({ params }: Props) {
             <p className={styles.storyText}>{p.story}</p>
           </div>
           <div className={`ph ${styles.storyImage}`}>
-            <span className="ph__cap">{p.name} — Detail</span>
+            {(() => {
+              const src = p.makerImageUrl || images[0]?.url;
+              return src
+                ? <img src={src} alt={p.makerImageUrl ? `${p.weaver || 'Maker'} — ${p.name}` : p.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+                : <span className="ph__cap">{p.name} — Detail</span>;
+            })()}
           </div>
         </section>
       )}
@@ -188,7 +182,7 @@ export default async function ProductPage({ params }: Props) {
             <h2 className={`serif ${styles.relatedTitle}`}>You may also love</h2>
           </div>
           <div className={styles.relatedGrid}>
-            {related.map((r: { _id: string; slug: string; name: string; price: number; fabric: string; region: string; stockQty: number }) => (
+            {related.map((r: { _id: string; slug: string; name: string; price: number; fabric: string; region: string; stockQty: number; images?: { url: string }[] }) => (
               <ProductCard
                 key={r._id}
                 name={r.name}
@@ -197,6 +191,8 @@ export default async function ProductPage({ params }: Props) {
                 meta={r.region}
                 pill={r.fabric}
                 pillVariant="silk"
+                imageUrl={r.images?.[0]?.url}
+                hoverImageUrl={r.images?.[1]?.url}
                 imageCaption={r.name}
                 urgency={r.stockQty <= 3 ? r.stockQty : undefined}
               />

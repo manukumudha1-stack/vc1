@@ -24,12 +24,13 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
   const { slug } = await params;
   await connectDB();
 
-  const body = await req.json();
-  if (body.name) body.slug = slugify(body.name);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { _id, __v, createdAt, updatedAt, slug: _slug, ...updateData } = await req.json();
+  if (updateData.name) updateData.slug = slugify(updateData.name);
 
   const updated = await CollectionModel.findOneAndUpdate(
     { slug },
-    { $set: body },
+    { $set: updateData },
     { new: true }
   );
   if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -43,18 +44,11 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
   const { slug } = await params;
   await connectDB();
 
-  const productCount = await ProductModel.countDocuments({ collectionId: { $exists: true } });
   const collection = await CollectionModel.findOne({ slug });
   if (!collection) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-  const collectionProducts = await ProductModel.countDocuments({ collectionId: collection._id });
-  if (collectionProducts > 0) {
-    return NextResponse.json(
-      { error: `Cannot delete: ${collectionProducts} product(s) belong to this collection.` },
-      { status: 409 }
-    );
-  }
-
+  // Unlink products before deleting the collection
+  await ProductModel.updateMany({ collectionId: collection._id }, { $unset: { collectionId: '' } });
   await CollectionModel.findOneAndDelete({ slug });
   return NextResponse.json({ ok: true });
 }

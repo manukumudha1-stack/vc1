@@ -1,6 +1,19 @@
+import { connectDB } from '@/lib/db';
+import SiteConfigModel from '@/lib/models/SiteConfig';
+import PageContent from '@/components/store/PageContent';
+
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Care Instructions — VC' };
 
-export default function CarePage() {
+export default async function CarePage() {
+  await connectDB();
+  const cfg = await SiteConfigModel.findOne({}).lean();
+  const dbContent = cfg?.pageContents?.care ?? '';
+
+  if (dbContent) {
+    return <PageContent eyebrow="Preserve the Weave" title="Care Instructions" content={dbContent} />;
+  }
+
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px' }}>
       <p className="eyebrow" style={{ marginBottom: 8 }}>Preserve the Weave</p>

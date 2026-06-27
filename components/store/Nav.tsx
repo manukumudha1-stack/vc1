@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Fragment } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import { useCartStore } from '@/store/cart';
 import { useCartDrawerStore } from '@/store/cart';
 import styles from './Nav.module.css';
@@ -14,8 +15,29 @@ interface ProductHit {
   price: number;
 }
 
+const BACK_HIDE = new Set(['/', '/checkout']);
+
+function isMongoId(s: string) { return /^[0-9a-f]{24}$/i.test(s); }
+
+function buildCrumbs(pathname: string): { label: string; href?: string }[] {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length === 0) return [];
+  const crumbs: { label: string; href?: string }[] = [{ label: 'Home', href: '/' }];
+  segments.forEach((seg, i) => {
+    const href = '/' + segments.slice(0, i + 1).join('/');
+    const isLast = i === segments.length - 1;
+    const label = isMongoId(seg)
+      ? 'Details'
+      : seg.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    crumbs.push({ label, href: isLast ? undefined : href });
+  });
+  return crumbs;
+}
+
 export default function Nav() {
   const router = useRouter();
+  const pathname = usePathname();
+  const crumbs = buildCrumbs(pathname);
 
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
@@ -31,6 +53,20 @@ export default function Nav() {
 
   const cartCount  = useCartStore((s) => s.items.length);
   const openDrawer = useCartDrawerStore((s) => s.openDrawer);
+  const { data: session } = useSession();
+  const isSignedIn = !!session?.user;
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   /* Scroll detection */
   useEffect(() => {
@@ -112,10 +148,28 @@ export default function Nav() {
   return (
     <>
       <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
+        {!BACK_HIDE.has(pathname) && (
+          <button className={styles.backBtn} aria-label="Go back" onClick={() => router.back()}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+          </button>
+        )}
         <div className={styles.inner}>
 
-          {/* Left: empty placeholder for symmetry */}
-          <ul className={styles.links} />
+          {/* Left: breadcrumb */}
+          <div className={styles.breadcrumbNav}>
+            {crumbs.map((crumb, i) => (
+              <Fragment key={i}>
+                {i > 0 && <span className={styles.crumbSep}>›</span>}
+                {crumb.href ? (
+                  <Link href={crumb.href} className={styles.crumb}>{crumb.label}</Link>
+                ) : (
+                  <span className={styles.crumbCurrent}>{crumb.label}</span>
+                )}
+              </Fragment>
+            ))}
+          </div>
 
           {/* Centre: logo */}
           <Link href="/" className={styles.logo} aria-label="VC — Home">
@@ -153,12 +207,31 @@ export default function Nav() {
             </button>
 
             {/* Account */}
-            <Link href="/account" className={styles.iconBtn} aria-label="Account">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </Link>
+            <div ref={accountRef} style={{ position: 'relative' }}>
+              <button
+                className={styles.iconBtn}
+                aria-label="Account"
+                onClick={() => isSignedIn ? setAccountOpen(o => !o) : router.push('/auth/signin')}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </button>
+              {isSignedIn && accountOpen && (
+                <div className={styles.accountDropdown}>
+                  <Link href="/account" className={styles.accountDropdownItem} onClick={() => setAccountOpen(false)}>
+                    My Account
+                  </Link>
+                  <button
+                    className={`${styles.accountDropdownItem} ${styles.accountDropdownSignOut}`}
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Cart */}
             <button className={styles.iconBtn} aria-label="Cart" onClick={openDrawer}>
@@ -196,15 +269,16 @@ export default function Nav() {
           onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}
         >
           <div style={{
-            background: 'var(--color-surface)',
+            background: '#FAF6EF',
             width: '100%', maxWidth: 640,
-            borderRadius: 4,
-            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+            borderRadius: 8,
+            boxShadow: '0 20px 60px rgba(28,18,8,0.35)',
+            border: '1px solid rgba(201,168,76,0.25)',
             overflow: 'hidden',
             margin: '0 16px',
           }}>
-            <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', padding: '0 16px' }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.5 }}>
+            <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', padding: '0 16px', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C7B6B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
               <input
@@ -216,19 +290,19 @@ export default function Nav() {
                   flex: 1,
                   border: 'none', outline: 'none',
                   background: 'transparent',
-                  padding: '18px 12px',
+                  padding: '20px 14px',
                   fontSize: '1rem',
                   fontFamily: 'inherit',
-                  color: 'var(--color-text)',
+                  color: '#1C1208',
                 }}
               />
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, opacity: 0.5 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, color: '#8C7B6B', display: 'flex' }}
                 aria-label="Close search"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
               </button>
@@ -236,12 +310,12 @@ export default function Nav() {
 
             {/* Results */}
             {query.trim() && (
-              <div style={{ borderTop: '1px solid var(--color-border)' }}>
+              <div>
                 {searching && (
-                  <p style={{ padding: '16px 20px', color: 'var(--color-text-muted)', fontSize: 14 }}>Searching…</p>
+                  <p style={{ padding: '16px 20px', color: '#8C7B6B', fontSize: 14 }}>Searching…</p>
                 )}
                 {!searching && results.length === 0 && (
-                  <p style={{ padding: '16px 20px', color: 'var(--color-text-muted)', fontSize: 14 }}>
+                  <p style={{ padding: '16px 20px', color: '#8C7B6B', fontSize: 14 }}>
                     No results for &ldquo;{query}&rdquo;
                   </p>
                 )}
@@ -252,16 +326,16 @@ export default function Nav() {
                     onClick={handleResultClick}
                     style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: '12px 20px',
-                      textDecoration: 'none', color: 'inherit',
-                      borderBottom: '1px solid var(--color-border)',
+                      padding: '14px 20px',
+                      textDecoration: 'none', color: '#1C1208',
+                      borderBottom: '1px solid rgba(201,168,76,0.12)',
                       transition: 'background 0.15s',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-surface-warm)')}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = '#F0E9DA')}
                     onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                   >
                     <span style={{ fontSize: 15 }}>{p.name}</span>
-                    <span style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
+                    <span style={{ fontSize: 13, color: '#8C7B6B' }}>
                       ₹{p.price.toLocaleString('en-IN')}
                     </span>
                   </Link>
@@ -299,9 +373,23 @@ export default function Nav() {
           <Link href="/collections" className={`serif ${styles.mobileNavLink}`} onClick={() => setMobileOpen(false)}>
             Collections
           </Link>
-          <Link href="/account" className={`serif ${styles.mobileNavLink}`} onClick={() => setMobileOpen(false)}>
-            Account
-          </Link>
+          {isSignedIn ? (
+            <>
+              <Link href="/account" className={`serif ${styles.mobileNavLink}`} onClick={() => setMobileOpen(false)}>
+                Account
+              </Link>
+              <button
+                className={`serif ${styles.mobileNavLink} ${styles.mobileSignOut}`}
+                onClick={() => { setMobileOpen(false); signOut({ callbackUrl: '/' }); }}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link href="/auth/signin" className={`serif ${styles.mobileNavLink}`} onClick={() => setMobileOpen(false)}>
+              Sign In
+            </Link>
+          )}
         </nav>
       </div>
     </>

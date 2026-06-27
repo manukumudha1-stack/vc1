@@ -8,14 +8,17 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json() as { name?: string; email?: string; password?: string };
-    const { name, email, password } = body;
+    const body = await req.json() as { name?: string; email?: string; phone?: string; password?: string };
+    const { name, email, phone, password } = body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json({ error: 'Name is required.' }, { status: 400 });
     }
     if (!email || !EMAIL_RE.test(email)) {
       return NextResponse.json({ error: 'A valid email address is required.' }, { status: 400 });
+    }
+    if (!phone || !/^\+?[0-9]{10,13}$/.test(phone.replace(/\s/g, ''))) {
+      return NextResponse.json({ error: 'A valid phone number is required.' }, { status: 400 });
     }
     if (!password || password.length < 8) {
       return NextResponse.json({ error: 'Password must be at least 8 characters.' }, { status: 400 });
@@ -32,6 +35,7 @@ export async function POST(req: NextRequest) {
     const user = await UserModel.create({
       name: name.trim(),
       email: email.toLowerCase(),
+      phone: phone.trim(),
       passwordHash,
     });
 

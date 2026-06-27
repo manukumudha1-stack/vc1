@@ -4,6 +4,7 @@ import { connectDB } from '@/lib/db';
 import UserModel from '@/lib/models/User';
 import OrderModel from '@/lib/models/Order';
 import MetricCard from '@/components/admin/MetricCard';
+import CustomerDeleteButton from '../CustomerDeleteButton';
 import { formatINR } from '@/lib/utils';
 import styles from './customer-detail.module.css';
 
@@ -41,7 +42,10 @@ export default async function CustomerDetailPage({ params }: Props) {
 
       <div className={styles.topbar}>
         <h1 className={styles.pageTitle}>{u.name}</h1>
-        <span className={`badge badge--${u.segment}`}>{u.segment}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span className={`badge badge--${u.segment}`}>{u.segment}</span>
+          <CustomerDeleteButton id={u._id} name={u.name} redirectAfter />
+        </div>
       </div>
 
       <div className={styles.metrics}>

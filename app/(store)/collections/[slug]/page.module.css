@@ -21,28 +21,27 @@
 .current {
   color: var(--color-text-primary);
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 13px;
+  padding-bottom: 3px;
 }
 
 /* ===== HERO ===== */
 .hero {
   position: relative;
-  height: 400px;
+  height: 200px;
   overflow: hidden;
-}
-
-.heroPh {
-  position: absolute;
-  inset: 0;
 }
 
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(28,18,8,.7) 0%, transparent 55%);
+  background: linear-gradient(to top, rgba(28,18,8,.68) 0%, transparent 60%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 48px var(--margin-desktop);
+  padding: 24px var(--margin-desktop);
 }
 
 .heroTitle {
@@ -179,7 +178,7 @@
   }
 
   .heroOverlay {
-    padding: 32px var(--margin-mobile);
+    padding: 20px var(--margin-mobile);
   }
 
   .grid {

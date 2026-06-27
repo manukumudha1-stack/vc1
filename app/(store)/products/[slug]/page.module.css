@@ -125,8 +125,10 @@
 }
 
 .storyImage {
+  position: relative;
   height: 520px;
   border-radius: var(--radius-sm);
+  overflow: hidden;
 }
 
 /* ===== RELATED ===== */

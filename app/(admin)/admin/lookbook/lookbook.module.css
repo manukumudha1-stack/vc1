@@ -1,0 +1,75 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: #FFF8EE;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.imageWrap {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: #F0E9DA;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.imagePh {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #8C7B6B;
+}
+
+.inactiveBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(28, 18, 8, 0.65);
+  color: #FFF8EE;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.info {
+  padding: 12px 14px 8px;
+  flex: 1;
+}
+
+.caption {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1C1208;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.meta {
+  font-size: 12px;
+  color: #8C7B6B;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 14px 14px;
+}

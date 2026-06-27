@@ -1,7 +1,7 @@
 /* ===== FOOTER ===== */
 .footer {
-  background: var(--color-text-primary);
-  color: var(--color-background-primary);
+  background: #1C1208;
+  color: #FAF6EF;
   padding: var(--spacing-2xl) 0 0;
 }
 
@@ -30,7 +30,7 @@
   font-size: 42px;
   font-weight: 400;
   letter-spacing: 0.32em;
-  color: var(--color-background-primary);
+  color: #FAF6EF;
   line-height: 1;
 }
 
@@ -83,7 +83,7 @@
 }
 
 .footerLink:hover {
-  color: var(--color-background-primary);
+  color: #FAF6EF;
 }
 
 /* ===== ASSURANCE STRIP ===== */

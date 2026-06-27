@@ -4,6 +4,8 @@ import CollectionModel from '@/lib/models/Collection';
 import CollectionForm from '@/components/admin/CollectionForm';
 import styles from '../../../products/products.module.css';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }

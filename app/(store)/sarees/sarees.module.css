@@ -1,0 +1,114 @@
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px var(--margin-desktop) 80px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin: 8px 0 12px;
+  color: #1C1208;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #8C7B6B;
+  letter-spacing: 0.04em;
+}
+
+/* ===== SECTION LABEL (featured divider at top) ===== */
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.sectionPill {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 100px;
+  padding: 4px 14px;
+  white-space: nowrap;
+}
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(201, 168, 76, 0.2);
+}
+
+/* ===== GRID ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px 20px;
+}
+
+/* ===== CARD WRAP + DIVIDER ===== */
+.cardWrap {
+  display: contents;
+}
+
+.divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0 4px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(140, 123, 107, 0.2);
+}
+
+.dividerLabel {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C7B6B;
+  white-space: nowrap;
+}
+
+/* ===== BACK LINK ===== */
+.back {
+  text-align: center;
+  margin-top: 56px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 32px 20px 64px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 8px;
+  }
+}

@@ -2,8 +2,11 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { connectDB } from '@/lib/db';
 import OrderModel from '@/lib/models/Order';
+import ProductModel from '@/lib/models/Product';
 import { formatINR } from '@/lib/utils';
 import styles from './page.module.css';
+
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -14,7 +17,31 @@ async function getOrder(id: string) {
   try {
     const order = await OrderModel.findById(id).lean();
     if (!order) return null;
-    return JSON.parse(JSON.stringify(order));
+
+    const serialized = JSON.parse(JSON.stringify(order));
+
+    // Back-fill missing item images from the live product catalog
+    const productIds = serialized.items
+      .filter((i: { image?: string }) => !i.image)
+      .map((i: { productId: string }) => i.productId);
+
+    if (productIds.length > 0) {
+      const products = await ProductModel.find({ _id: { $in: productIds } })
+        .select('_id images')
+        .lean();
+      const imageMap = new Map(
+        products.map((p: { _id: unknown; images?: { url: string }[] }) => [
+          String(p._id),
+          p.images?.[0]?.url ?? '',
+        ])
+      );
+      serialized.items = serialized.items.map((item: { productId: string; image?: string }) => ({
+        ...item,
+        image: item.image || imageMap.get(item.productId) || '',
+      }));
+    }
+
+    return serialized;
   } catch {
     return null;
   }
@@ -70,9 +97,14 @@ export default async function OrderConfirmationPage({ params }: Props) {
 
           {/* Items */}
           <ul className={styles.items}>
-            {order.items.map((item: { name: string; sku: string; qty: number; price: number }, i: number) => (
+            {order.items.map((item: { name: string; sku: string; qty: number; price: number; image?: string }, i: number) => (
               <li key={i} className={styles.item}>
-                <div className={`ph ${styles.itemThumb}`} />
+                <div className={`ph ${styles.itemThumb}`}>
+                  {item.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  )}
+                </div>
                 <div className={styles.itemInfo}>
                   <p className={styles.itemName}>{item.name}</p>
                   <p className="caption">{item.sku} · Qty {item.qty}</p>

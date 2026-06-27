@@ -57,7 +57,7 @@
   background: rgba(250, 246, 239, 0.82);
   border-radius: 50%;
   backdrop-filter: blur(4px);
-  color: var(--color-text-primary);
+  color: #1C1208;
   transition: background 0.2s;
   z-index: 2;
 }
@@ -66,8 +66,137 @@
   background: rgba(250, 246, 239, 0.96);
 }
 
+:global([data-theme="night"]) .arrow {
+  background: rgba(28, 18, 8, 0.72);
+  color: rgba(250, 246, 239, 0.92);
+  border: 1px solid rgba(250, 246, 239, 0.15);
+}
+
+:global([data-theme="night"]) .arrow:hover {
+  background: rgba(28, 18, 8, 0.92);
+}
+
 .arrowPrev { left: 12px; }
 .arrowNext { right: 12px; }
+
+/* ===== ZOOM CURSOR ===== */
+.stageClickable {
+  cursor: default;
+}
+
+/* ===== ZOOM BUTTON ===== */
+.zoomBtn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(250, 246, 239, 0.82);
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  color: #1C1208;
+  transition: background 0.2s;
+  z-index: 2;
+  cursor: default;
+}
+
+.zoomBtn:hover {
+  background: rgba(250, 246, 239, 0.96);
+}
+
+:global([data-theme="night"]) .zoomBtn {
+  background: rgba(28, 18, 8, 0.72);
+  color: rgba(250, 246, 239, 0.92);
+  border: 1px solid rgba(250, 246, 239, 0.15);
+}
+
+/* ===== LIGHTBOX ===== */
+.lightboxBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: rgba(10, 6, 2, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.lightboxInner {
+  position: relative;
+  max-width: min(90vw, 900px);
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxImg {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.lightboxClose {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(250, 246, 239, 0.12);
+  border-radius: 50%;
+  color: rgba(250, 246, 239, 0.85);
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.lightboxClose:hover {
+  background: rgba(250, 246, 239, 0.22);
+  color: #FAF6EF;
+}
+
+.lightboxCounter {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: rgba(250, 246, 239, 0.5);
+}
+
+.lightboxPrev {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(250, 246, 239, 0.12) !important;
+  color: rgba(250, 246, 239, 0.85) !important;
+  border: none !important;
+}
+
+.lightboxNext {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(250, 246, 239, 0.12) !important;
+  color: rgba(250, 246, 239, 0.85) !important;
+  border: none !important;
+}
+
+.lightboxPrev:hover,
+.lightboxNext:hover {
+  background: rgba(250, 246, 239, 0.22) !important;
+}
 
 @media (max-width: 600px) {
   .gallery {

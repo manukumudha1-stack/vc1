@@ -1,6 +1,12 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
+const USER_PROTECTED = ['/account', '/checkout', '/orders'];
+
+function isUserProtected(pathname: string) {
+  return USER_PROTECTED.some(p => pathname === p || pathname.startsWith(p + '/'));
+}
+
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
@@ -12,9 +18,11 @@ export default withAuth(
       }
     }
 
-    if (pathname.startsWith('/account')) {
+    if (isUserProtected(pathname)) {
       if (!token) {
-        return NextResponse.redirect(new URL('/auth/signin', req.url));
+        const signinUrl = new URL('/auth/signin', req.url);
+        signinUrl.searchParams.set('callbackUrl', req.url);
+        return NextResponse.redirect(signinUrl);
       }
     }
 
@@ -24,12 +32,10 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
-        // For admin routes: always return true so the middleware function above
-        // handles the redirect to /admin/login (not NextAuth's default /auth/signin).
         if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
           return true;
         }
-        if (pathname.startsWith('/account')) {
+        if (isUserProtected(pathname)) {
           return !!token;
         }
         return true;
@@ -39,5 +45,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ['/admin/:path*', '/account/:path*'],
+  matcher: ['/admin/:path*', '/account/:path*', '/checkout', '/orders', '/orders/:path*'],
 };

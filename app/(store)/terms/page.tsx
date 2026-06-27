@@ -1,6 +1,19 @@
+import { connectDB } from '@/lib/db';
+import SiteConfigModel from '@/lib/models/SiteConfig';
+import PageContent from '@/components/store/PageContent';
+
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Terms of Use — VC' };
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  await connectDB();
+  const cfg = await SiteConfigModel.findOne({}).lean();
+  const dbContent = cfg?.pageContents?.terms ?? '';
+
+  if (dbContent) {
+    return <PageContent eyebrow="Legal" title="Terms of Use" content={dbContent} />;
+  }
+
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px' }}>
       <p className="eyebrow" style={{ marginBottom: 8 }}>Legal</p>

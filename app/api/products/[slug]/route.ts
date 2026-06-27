@@ -27,11 +27,12 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     await connectDB();
     const { slug } = await params;
-    const body    = await req.json();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _id, __v, createdAt, updatedAt, slug: _slug, ...updateData } = await req.json();
 
     const product = await ProductModel.findOneAndUpdate(
       { slug },
-      { $set: body },
+      { $set: updateData },
       { new: true, runValidators: true }
     ).lean();
 
@@ -53,11 +54,7 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     await connectDB();
     const { slug } = await params;
 
-    const product = await ProductModel.findOneAndUpdate(
-      { slug },
-      { $set: { isActive: false } },
-      { new: true }
-    ).lean();
+    const product = await ProductModel.findOneAndDelete({ slug }).lean();
 
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     return NextResponse.json({ success: true });

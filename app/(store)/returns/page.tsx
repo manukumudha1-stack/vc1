@@ -1,6 +1,19 @@
+import { connectDB } from '@/lib/db';
+import SiteConfigModel from '@/lib/models/SiteConfig';
+import PageContent from '@/components/store/PageContent';
+
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Returns & Exchange — VC' };
 
-export default function ReturnsPage() {
+export default async function ReturnsPage() {
+  await connectDB();
+  const cfg = await SiteConfigModel.findOne({}).lean();
+  const dbContent = cfg?.pageContents?.returns ?? '';
+
+  if (dbContent) {
+    return <PageContent eyebrow="Hassle-Free" title="Returns & Exchange" content={dbContent} />;
+  }
+
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px' }}>
       <p className="eyebrow" style={{ marginBottom: 8 }}>Hassle-Free</p>

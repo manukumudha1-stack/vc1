@@ -12,6 +12,8 @@ interface ProductCardProps {
   meta?: string;
   pill?: string;
   pillVariant?: 'silk' | 'cotton' | 'crepe';
+  imageUrl?: string;
+  hoverImageUrl?: string;
   imageCaption?: string;
   urgency?: number;
 }
@@ -23,20 +25,32 @@ export default function ProductCard({
   meta,
   pill,
   pillVariant = 'silk',
+  imageUrl,
+  hoverImageUrl,
   imageCaption,
   urgency,
 }: ProductCardProps) {
   const [wishlisted, setWishlisted] = useState(false);
 
+  // Effective hover image: second image, or fall back to first image (no gradient flash)
+  const effectiveHoverUrl = hoverImageUrl ?? imageUrl;
+
   return (
     <article className={styles.card}>
       <Link href={`/products/${slug}`} className={styles.imageWrap} tabIndex={-1} aria-hidden="true">
-        {/* Primary placeholder */}
         <div className={`ph ${styles.ph}`}>
-          {imageCaption && <span className="ph__cap">{imageCaption}</span>}
+          {imageUrl
+            ? <img src={imageUrl} alt={imageCaption ?? name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            : imageCaption && <span className="ph__cap">{imageCaption}</span>
+          }
         </div>
-        {/* Hover second image */}
-        <div className={`ph ${styles.phHover}`} aria-hidden="true" />
+        {/* Hover layer — ph class only when no image (gradient fallback) */}
+        <div className={`${effectiveHoverUrl ? '' : 'ph '}${styles.phHover}`} aria-hidden="true">
+          {effectiveHoverUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={effectiveHoverUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          )}
+        </div>
       </Link>
 
       {/* Wishlist */}

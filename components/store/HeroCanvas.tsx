@@ -365,11 +365,9 @@ export default function HeroCanvas() {
       canvas!.height = H * dpr;
       ctx.scale(dpr, dpr);
 
-      particles.forEach((p, i) => {
+      particles.forEach((p) => {
         spawnParticle(p, W, H, false);
-        // Stagger initial Y evenly within each 12-particle depth group
-        const idxInLayer = i % (TOTAL / 3);
-        p.y = ((idxInLayer + Math.random()) / (TOTAL / 3)) * H;
+        // y is already random inside spawnParticle — no override needed
       });
     }
 

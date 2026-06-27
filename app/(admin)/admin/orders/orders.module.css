@@ -11,6 +11,139 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
+}
+
+.resultCount {
+  font-size: 13px;
+  color: #8C7B6B;
+  letter-spacing: 0.04em;
+}
+
+/* ===== SEARCH BAR ===== */
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.searchField {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #8C7B6B;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 100%;
+  background: #FFF8EE;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 6px;
+  padding: 9px 32px 9px 38px;
+  font-size: 14px;
+  color: #1C1208;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: rgba(201, 168, 76, 0.65);
+}
+
+.searchInput::placeholder {
+  color: #8C7B6B;
+}
+
+.clearInput {
+  position: absolute;
+  right: 10px;
+  font-size: 18px;
+  color: #8C7B6B;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.clearInput:hover {
+  color: #1C1208;
+}
+
+.dateRange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateInput {
+  background: #FFF8EE;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 6px;
+  padding: 9px 10px;
+  font-size: 13px;
+  color: #1C1208;
+  outline: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.dateInput:focus {
+  border-color: rgba(201, 168, 76, 0.65);
+}
+
+.dateSep {
+  font-size: 13px;
+  color: #8C7B6B;
+  white-space: nowrap;
+}
+
+.btnSearch {
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: #C9A84C;
+  color: #1C1208;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btnSearch:hover {
+  background: #b8973f;
+}
+
+.btnClear {
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  color: #8C7B6B;
+  border: 1px solid rgba(140, 123, 107, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btnClear:hover {
+  color: #1C1208;
+  border-color: rgba(140, 123, 107, 0.6);
 }
 
 .pageTitle {
@@ -117,6 +250,18 @@
 .muted {
   color: #8C7B6B;
   font-size: 14px;
+}
+
+.customerName {
+  font-weight: 500;
+  font-size: 14px;
+  color: #1C1208;
+}
+
+.customerSub {
+  font-size: 12px;
+  color: #8C7B6B;
+  margin-top: 2px;
 }
 
 .amount {

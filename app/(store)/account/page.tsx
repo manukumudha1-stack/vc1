@@ -7,6 +7,8 @@ import OrderModel from '@/lib/models/Order';
 import { formatINR } from '@/lib/utils';
 import styles from './page.module.css';
 
+export const dynamic = 'force-dynamic';
+
 async function getAccountData(email: string) {
   await connectDB();
   const user   = await UserModel.findOne({ email }).lean();

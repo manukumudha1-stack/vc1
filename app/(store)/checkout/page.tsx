@@ -73,6 +73,7 @@ export default function CheckoutPage() {
             sku:       i.sku,
             price:     i.price,
             qty:       i.qty,
+            image:     i.image ?? '',
           })),
           shippingAddress: {
             email:    address.email,
@@ -294,7 +295,12 @@ export default function CheckoutPage() {
           <ul className={styles.summaryItems}>
             {items.map((item) => (
               <li key={item.productId} className={styles.summaryItem}>
-                <div className={`ph ${styles.summaryThumb}`} />
+                <div className={`ph ${styles.summaryThumb}`}>
+                  {item.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  )}
+                </div>
                 <div className={styles.summaryItemInfo}>
                   <p className={styles.summaryItemName}>{item.name}</p>
                   <p className="caption">Qty: {item.qty}</p>

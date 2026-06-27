@@ -89,6 +89,7 @@ export async function POST(req: NextRequest) {
         sku:       p.sku,
         qty:       item.qty,
         price:     p.price,
+        image:     p.images?.[0]?.url ?? '',
       };
     });
 
@@ -106,6 +107,7 @@ export async function POST(req: NextRequest) {
       if (user) customerId = user._id as mongoose.Types.ObjectId;
     }
 
+    const now = new Date();
     const orderDoc = new OrderModel({
       orderNumber:     generateOrderNumber(),
       customerId:      customerId,
@@ -114,11 +116,12 @@ export async function POST(req: NextRequest) {
         ...shippingAddress,
         landmark: shippingAddress.landmark ?? '',
       },
-      payment: { method: 'COD', provider: 'cod', status: 'pending' },
-      status:   'pending',
+      payment:       { method: 'COD', provider: 'cod', status: 'pending' },
+      status:        'pending',
       subtotal,
-      total:    subtotal,
-      notes:    notes ?? '',
+      total:         subtotal,
+      notes:         notes ?? '',
+      statusHistory: [{ status: 'placed', changedAt: now }],
     });
     await orderDoc.save();
 

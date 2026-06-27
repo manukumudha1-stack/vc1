@@ -20,9 +20,11 @@ export interface IProduct extends Document {
   images: IProductImage[];
   blousePiece: 'included' | 'not_included' | 'on_request';
   weaver: string;
+  makerImageUrl: string;
   description: string;
   story: string;
   careInstructions: string;
+  isFeatured: boolean;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -52,9 +54,11 @@ const ProductSchema = new Schema<IProduct>(
     images:           [ProductImageSchema],
     blousePiece:      { type: String, enum: ['included', 'not_included', 'on_request'], default: 'included' },
     weaver:           { type: String, default: '' },
+    makerImageUrl:    { type: String, default: '' },
     description:      { type: String, default: '' },
     story:            { type: String, default: '' },
     careInstructions: { type: String, default: '' },
+    isFeatured:       { type: Boolean, default: false },
     isActive:         { type: Boolean, default: true },
   },
   { timestamps: true }

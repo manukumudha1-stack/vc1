@@ -110,6 +110,7 @@ function SignInPageInner() {
   const [regName, setRegName]               = useState('');
   const [regEmail, setRegEmail]             = useState('');
   const [regEmailError, setRegEmailError]   = useState('');
+  const [regPhone, setRegPhone]             = useState('');
   const [regPassword, setRegPassword]       = useState('');
   const [regConfirm, setRegConfirm]         = useState('');
   const [regError, setRegError]             = useState('');
@@ -143,6 +144,7 @@ function SignInPageInner() {
 
     if (!regName.trim()) { setRegError('Name is required.'); return; }
     if (!EMAIL_RE.test(regEmail)) { setRegError('Please enter a valid email.'); return; }
+    if (!/^\+?[0-9]{10,13}$/.test(regPhone.replace(/\s/g, ''))) { setRegError('Please enter a valid phone number.'); return; }
     if (regPassword.length < 8) { setRegError('Password must be at least 8 characters.'); return; }
     if (regPassword !== regConfirm) { setRegError('Passwords do not match.'); return; }
 
@@ -151,7 +153,7 @@ function SignInPageInner() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: regName.trim(), email: regEmail, password: regPassword }),
+        body: JSON.stringify({ name: regName.trim(), email: regEmail, phone: regPhone.trim(), password: regPassword }),
       });
       const data = await res.json() as { success?: boolean; error?: string };
       if (!res.ok) {
@@ -351,6 +353,16 @@ function SignInPageInner() {
                   <p style={{ fontSize: '12px', color: '#c0392b', margin: 0, textAlign: 'left' }}>{regEmailError}</p>
                 )}
               </div>
+              <input
+                type="tel"
+                placeholder="Phone number"
+                value={regPhone}
+                onChange={(e) => setRegPhone(e.target.value)}
+                required
+                style={inputStyle}
+                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
+              />
               <input
                 type="password"
                 placeholder="Password (min 8 characters)"

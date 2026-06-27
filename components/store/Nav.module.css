@@ -29,7 +29,65 @@
   height: 80px;
 }
 
-/* ===== NAV LINKS (left) ===== */
+/* ===== BREADCRUMB (left) ===== */
+.breadcrumbNav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 52px; /* clear the absolute back button (8px + 44px) */
+  overflow: hidden;
+}
+
+.crumb {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: rgba(28, 18, 8, 0.55);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.crumb:hover {
+  color: rgba(28, 18, 8, 0.9);
+}
+
+.crumbCurrent {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(28, 18, 8, 0.88);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.crumbSep {
+  font-size: 11px;
+  color: rgba(28, 18, 8, 0.25);
+  flex-shrink: 0;
+}
+
+/* Night mode — switch to light text */
+:global([data-theme="night"]) .crumb {
+  color: rgba(250, 246, 239, 0.55);
+}
+
+:global([data-theme="night"]) .crumb:hover {
+  color: rgba(250, 246, 239, 0.9);
+}
+
+:global([data-theme="night"]) .crumbCurrent {
+  color: rgba(250, 246, 239, 0.92);
+}
+
+:global([data-theme="night"]) .crumbSep {
+  color: rgba(250, 246, 239, 0.25);
+}
+
+/* ===== NAV LINKS (left) — kept for reference ===== */
 .links {
   display: flex;
   align-items: center;
@@ -65,6 +123,36 @@
   color: rgba(250, 246, 239, 0.95);
   transition: color 0.3s;
 }
+
+/* ===== BACK BUTTON (absolute left) ===== */
+.backBtn {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: rgba(28, 18, 8, 0.6);
+  transition: color 0.3s;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.backBtn:hover {
+  color: rgba(28, 18, 8, 0.9);
+}
+
+:global([data-theme="night"]) .backBtn {
+  color: rgba(250, 246, 239, 0.75);
+}
+
+:global([data-theme="night"]) .backBtn:hover {
+  color: rgba(250, 246, 239, 1);
+}
+
 
 /* ===== ICONS (right) ===== */
 .icons {
@@ -202,6 +290,60 @@
   color: var(--color-accent-gold);
 }
 
+.mobileSignOut {
+  text-align: left;
+  width: 100%;
+  color: var(--color-text-secondary);
+}
+
+.mobileSignOut:hover {
+  color: var(--color-accent-temple-red);
+}
+
+/* ===== ACCOUNT DROPDOWN ===== */
+.accountDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: rgba(28, 18, 8, 0.97);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 8px;
+  min-width: 160px;
+  box-shadow: 0 8px 32px rgba(28, 18, 8, 0.4);
+  overflow: hidden;
+  z-index: 200;
+}
+
+.accountDropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 16px;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: rgba(250, 246, 239, 0.75);
+  transition: background 0.15s, color 0.15s;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+}
+
+.accountDropdownItem:last-child {
+  border-bottom: none;
+}
+
+.accountDropdownItem:hover {
+  background: rgba(250, 246, 239, 0.06);
+  color: #FAF6EF;
+}
+
+.accountDropdownSignOut {
+  color: rgba(192, 57, 43, 0.75);
+}
+
+.accountDropdownSignOut:hover {
+  color: #e74c3c;
+  background: rgba(192, 57, 43, 0.08);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
   .inner {
@@ -209,6 +351,10 @@
   }
 
   .links {
+    display: none;
+  }
+
+  .breadcrumbNav {
     display: none;
   }
 

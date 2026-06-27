@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminShell from '@/components/admin/AdminShell';
+import BackButton from '@/components/admin/BackButton';
 import styles from './layout.module.css';
 
 export default async function AdminLayout({
@@ -30,6 +31,7 @@ export default async function AdminLayout({
       <div className={styles.shell}>
         <AdminSidebar />
         <main className={styles.main}>
+          <BackButton />
           {children}
         </main>
       </div>

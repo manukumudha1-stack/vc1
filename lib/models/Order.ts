@@ -1,11 +1,17 @@
 import mongoose, { Schema, Document, Model, Types } from 'mongoose';
 
+export interface IStatusEvent {
+  status: string;
+  changedAt: Date;
+}
+
 export interface IOrderItem {
   productId: Types.ObjectId;
   name: string;
   sku: string;
   qty: number;
   price: number;
+  image?: string;
 }
 
 export interface IShippingAddress {
@@ -37,6 +43,7 @@ export interface IOrder extends Document {
   subtotal: number;
   total: number;
   notes?: string;
+  statusHistory: IStatusEvent[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,6 +55,7 @@ const OrderItemSchema = new Schema<IOrderItem>(
     sku:       { type: String, required: true },
     qty:       { type: Number, required: true, min: 1 },
     price:     { type: Number, required: true, min: 0 },
+    image:     { type: String, default: '' },
   },
   { _id: false }
 );
@@ -66,6 +74,14 @@ const ShippingAddressSchema = new Schema<IShippingAddress>(
   { _id: false }
 );
 
+const StatusEventSchema = new Schema<IStatusEvent>(
+  {
+    status:    { type: String, required: true },
+    changedAt: { type: Date,   required: true },
+  },
+  { _id: false }
+);
+
 const OrderSchema = new Schema<IOrder>(
   {
     orderNumber:     { type: String, required: true, unique: true },
@@ -80,10 +96,16 @@ const OrderSchema = new Schema<IOrder>(
     status:   { type: String, enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
     subtotal: { type: Number, required: true },
     total:    { type: Number, required: true },
-    notes:    { type: String, default: '' },
+    notes:         { type: String, default: '' },
+    statusHistory: { type: [StatusEventSchema], default: [] },
   },
   { timestamps: true }
 );
+
+// In dev, clear cached model so schema changes are picked up after hot reload
+if (process.env.NODE_ENV !== 'production') {
+  delete (mongoose.models as Record<string, unknown>).Order;
+}
 
 OrderSchema.index({ customerId: 1 });
 OrderSchema.index({ status: 1 });

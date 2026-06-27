@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import styles from './AdminSidebar.module.css';
 
 const navItems = [
@@ -95,6 +95,16 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    label: 'Settings',
+    href: '/admin/settings',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.4" fill="none"/>
+        <path d="M8 1v2M8 13v2M1 8h2M13 8h2M2.93 2.93l1.41 1.41M11.66 11.66l1.41 1.41M2.93 13.07l1.41-1.41M11.66 4.34l1.41-1.41" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminSidebar() {
@@ -135,11 +145,22 @@ export default function AdminSidebar() {
       <div className={styles.user}>
         <div className={styles.userInner}>
           <div className={styles.avatar}>{initial}</div>
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className={styles.userEmail}>{email}</div>
             <div className={styles.userRole}>Admin</div>
           </div>
         </div>
+        <button
+          className={styles.signOutBtn}
+          onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign out
+        </button>
       </div>
     </aside>
   );

@@ -7,13 +7,13 @@ import ProductModel from '@/lib/models/Product';
 import ProductCard from '@/components/store/ProductCard';
 import FilterSidebar from '@/components/store/FilterSidebar';
 import SortSelect from '@/components/store/SortSelect';
+import HeroCanvas from '@/components/store/HeroCanvas';
 import styles from './page.module.css';
+
+export const dynamic = 'force-dynamic';
 
 interface SearchParams {
   price?: string;
-  zari?: string | string[];
-  occasion?: string | string[];
-  region?: string | string[];
   sort?: string;
 }
 
@@ -25,7 +25,11 @@ interface Props {
 async function getCollectionData(slug: string, searchParams: SearchParams) {
   await connectDB();
 
-  const collection = await CollectionModel.findOne({ slug }).lean();
+  const [collection, allCollections] = await Promise.all([
+    CollectionModel.findOne({ slug }).lean(),
+    CollectionModel.find({}).sort({ sortOrder: 1, name: 1 }).lean(),
+  ]);
+
   if (!collection) return null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,25 +38,11 @@ async function getCollectionData(slug: string, searchParams: SearchParams) {
     isActive: true,
   };
 
-  // Price filter
   if (searchParams.price) {
     const [min, max] = searchParams.price.split('-').map(Number);
     query.price = { $gte: min, $lte: max };
   }
 
-  // Zari filter
-  const zari = Array.isArray(searchParams.zari) ? searchParams.zari : searchParams.zari ? [searchParams.zari] : [];
-  if (zari.length > 0) query.zariType = { $in: zari };
-
-  // Occasion filter
-  const occasion = Array.isArray(searchParams.occasion) ? searchParams.occasion : searchParams.occasion ? [searchParams.occasion] : [];
-  if (occasion.length > 0) query.occasion = { $in: occasion };
-
-  // Region filter
-  const region = Array.isArray(searchParams.region) ? searchParams.region : searchParams.region ? [searchParams.region] : [];
-  if (region.length > 0) query.region = { $in: region };
-
-  // Sort
   let sort: Record<string, 1 | -1> = { createdAt: -1 };
   if (searchParams.sort === 'price-asc')  sort = { price: 1 };
   if (searchParams.sort === 'price-desc') sort = { price: -1 };
@@ -61,61 +51,41 @@ async function getCollectionData(slug: string, searchParams: SearchParams) {
   const products = await ProductModel.find(query).sort(sort).lean();
 
   return {
-    collection: JSON.parse(JSON.stringify(collection)),
-    products:   JSON.parse(JSON.stringify(products)),
+    collection:     JSON.parse(JSON.stringify(collection)),
+    allCollections: JSON.parse(JSON.stringify(allCollections)),
+    products:       JSON.parse(JSON.stringify(products)),
   };
 }
 
 function ActiveFilterChips({ searchParams }: { searchParams: SearchParams }) {
-  const chips: { label: string; key: string; value: string }[] = [];
+  if (!searchParams.price) return null;
 
-  if (searchParams.price) {
-    chips.push({ label: `Price: ${searchParams.price.replace('-', ' – ')}`, key: 'price', value: searchParams.price });
-  }
-
-  const toArr = (v?: string | string[]) => Array.isArray(v) ? v : v ? [v] : [];
-  toArr(searchParams.zari).forEach((v)     => chips.push({ label: v, key: 'zari', value: v }));
-  toArr(searchParams.occasion).forEach((v) => chips.push({ label: v, key: 'occasion', value: v }));
-  toArr(searchParams.region).forEach((v)   => chips.push({ label: v, key: 'region', value: v }));
-
-  if (chips.length === 0) return null;
+  const [min, max] = searchParams.price.split('-').map(Number);
+  const fmt = (v: number) => v >= 100000 ? '₹1,00,000+' : '₹' + v.toLocaleString('en-IN');
 
   return (
     <div className={styles.activeChips}>
-      {chips.map((chip) => (
-        <span key={`${chip.key}-${chip.value}`} className={styles.chip}>
-          {chip.label}
-        </span>
-      ))}
+      <span className={styles.chip}>
+        Price: {fmt(min)} – {fmt(max)}
+      </span>
     </div>
   );
 }
 
 export default async function CollectionPage({ params, searchParams }: Props) {
-  const { slug }        = await params;
-  const resolvedSP      = await searchParams;
-  const data            = await getCollectionData(slug, resolvedSP);
+  const { slug }   = await params;
+  const resolvedSP = await searchParams;
+  const data       = await getCollectionData(slug, resolvedSP);
 
   if (!data) notFound();
 
-  const { collection, products } = data;
+  const { collection, allCollections, products } = data;
 
   return (
     <div className={styles.page}>
-      {/* Breadcrumb */}
-      <div className={styles.breadcrumb}>
-        <Link href="/" className="link">Home</Link>
-        <span className={styles.sep}>›</span>
-        <Link href="/collections" className="link">Collections</Link>
-        <span className={styles.sep}>›</span>
-        <span className={styles.current}>{collection.name}</span>
-      </div>
-
       {/* Collection hero */}
       <div className={styles.hero}>
-        <div className={`ph ${styles.heroPh}`}>
-          <span className="ph__cap">{collection.name}</span>
-        </div>
+        <HeroCanvas />
         <div className={styles.heroOverlay}>
           <p className="eyebrow">{products.length} pieces</p>
           <h1 className={`serif ${styles.heroTitle}`}>{collection.name}</h1>
@@ -129,12 +99,14 @@ export default async function CollectionPage({ params, searchParams }: Props) {
       <div className={styles.body}>
         {/* Sidebar */}
         <Suspense fallback={<div className={styles.sidebarSkeleton} />}>
-          <FilterSidebar />
+          <FilterSidebar
+            collections={allCollections.map((c: { slug: string; name: string }) => ({ slug: c.slug, name: c.name }))}
+            currentSlug={slug}
+          />
         </Suspense>
 
         {/* Main content */}
         <div className={styles.main}>
-          {/* Sort + active filters row */}
           <div className={styles.toolbar}>
             <ActiveFilterChips searchParams={resolvedSP} />
             <div className={styles.sortWrap}>
@@ -143,7 +115,6 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          {/* Product grid */}
           {products.length === 0 ? (
             <div className={styles.empty}>
               <p className={`serif ${styles.emptyTitle}`}>No sarees match your filters.</p>
@@ -153,7 +124,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
             </div>
           ) : (
             <div className={styles.grid}>
-              {products.map((p: { _id: string; slug: string; name: string; price: number; fabric: string; region: string; stockQty: number }) => (
+              {products.map((p: { _id: string; slug: string; name: string; price: number; fabric: string; region: string; stockQty: number; images?: { url: string }[] }) => (
                 <ProductCard
                   key={p._id}
                   name={p.name}
@@ -162,6 +133,8 @@ export default async function CollectionPage({ params, searchParams }: Props) {
                   meta={p.region}
                   pill={p.fabric}
                   pillVariant="silk"
+                  imageUrl={p.images?.[0]?.url}
+                  hoverImageUrl={p.images?.[1]?.url}
                   imageCaption={p.name}
                   urgency={p.stockQty <= 3 ? p.stockQty : undefined}
                 />

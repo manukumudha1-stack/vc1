@@ -24,6 +24,7 @@ interface ProductFormData {
   stockQty: number | string;
   blousePiece: string;
   weaver: string;
+  makerImageUrl: string;
   description: string;
   story: string;
   careInstructions: string;
@@ -31,8 +32,17 @@ interface ProductFormData {
 }
 
 interface Props {
-  initialData?: Partial<ProductFormData>;
+  initialData?: Partial<ProductFormData> & { isFeatured?: boolean };
   mode: 'new' | 'edit';
+}
+
+function generateSKU() {
+  const now  = new Date();
+  const yy   = String(now.getFullYear()).slice(2);
+  const mm   = String(now.getMonth() + 1).padStart(2, '0');
+  const dd   = String(now.getDate()).padStart(2, '0');
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `VC-${yy}${mm}${dd}-${rand}`;
 }
 
 const OCCASIONS = ['Wedding', 'Festival', 'Daily Wear', 'Party', 'Office'];
@@ -47,6 +57,11 @@ export default function ProductForm({ initialData, mode }: Props) {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [images, setImages] = useState<string[]>(initialData?.images ?? Array(6).fill(''));
   const [uploading, setUploading] = useState<number | null>(null);
+  const [makerImageUrl, setMakerImageUrl] = useState(initialData?.makerImageUrl ?? '');
+  const [uploadingMaker, setUploadingMaker] = useState(false);
+  const [isFeatured, setIsFeatured] = useState<boolean>(initialData?.isFeatured === true);
+  const [sku] = useState<string>(() => initialData?.sku || generateSKU());
+  const makerFileRef = useRef<HTMLInputElement | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -54,7 +69,7 @@ export default function ProductForm({ initialData, mode }: Props) {
 
   const [form, setForm] = useState<ProductFormData>({
     name: initialData?.name ?? '',
-    sku: initialData?.sku ?? '',
+    sku: '',
     collectionId: initialData?.collectionId ?? '',
     fabric: initialData?.fabric ?? '',
     region: initialData?.region ?? '',
@@ -64,6 +79,7 @@ export default function ProductForm({ initialData, mode }: Props) {
     stockQty: initialData?.stockQty ?? '',
     blousePiece: initialData?.blousePiece ?? 'included',
     weaver: initialData?.weaver ?? '',
+    makerImageUrl: initialData?.makerImageUrl ?? '',
     description: initialData?.description ?? '',
     story: initialData?.story ?? '',
     careInstructions: initialData?.careInstructions ?? '',
@@ -116,6 +132,31 @@ export default function ProductForm({ initialData, mode }: Props) {
     }
   }
 
+  async function handleMakerFileChange(file: File) {
+    setUploadingMaker(true);
+    try {
+      const sigRes = await fetch('/api/upload', { method: 'POST' });
+      const sigData = await sigRes.json();
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('api_key', sigData.apiKey);
+      fd.append('timestamp', sigData.timestamp);
+      fd.append('signature', sigData.signature);
+      fd.append('folder', sigData.folder || 'vc-sarees');
+      const cloudRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`,
+        { method: 'POST', body: fd }
+      );
+      const cloudData = await cloudRes.json();
+      if (cloudData.secure_url) setMakerImageUrl(cloudData.secure_url);
+      else setError('Maker image upload failed. Please try again.');
+    } catch {
+      setError('Maker image upload failed. Please try again.');
+    } finally {
+      setUploadingMaker(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
@@ -124,12 +165,15 @@ export default function ProductForm({ initialData, mode }: Props) {
     try {
       const payload = {
         ...form,
+        sku,
         price: Number(form.price),
         stockQty: Number(form.stockQty),
         occasion: typeof form.occasion === 'string'
           ? form.occasion.split(',').map(s => s.trim()).filter(Boolean)
           : form.occasion,
         images: images.filter(Boolean).map(url => ({ url, caption: '', cloudinaryId: '' })),
+        makerImageUrl,
+        isFeatured,
       };
 
       let res: Response;
@@ -223,14 +267,8 @@ export default function ProductForm({ initialData, mode }: Props) {
             />
           </div>
           <div className={styles.field}>
-            <label className={styles.label}>SKU</label>
-            <input
-              className={styles.input}
-              value={form.sku}
-              onChange={e => setField('sku', e.target.value)}
-              placeholder="e.g. VC-KANJ-0142"
-              required
-            />
+            <label className={styles.label}>SKU <span className={styles.labelNote}>auto-generated</span></label>
+            <div className={styles.skuDisplay}>{sku}</div>
           </div>
         </div>
 
@@ -337,11 +375,66 @@ export default function ProductForm({ initialData, mode }: Props) {
             </select>
           </div>
         </div>
+
+        <label className={styles.toggleRow}>
+          <div
+            className={`${styles.toggle} ${isFeatured ? styles.toggleOn : ''}`}
+            onClick={() => setIsFeatured(v => !v)}
+            role="switch"
+            aria-checked={isFeatured}
+            tabIndex={0}
+            onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') setIsFeatured(v => !v); }}
+          >
+            <div className={styles.toggleThumb} />
+          </div>
+          <div>
+            <div className={styles.toggleLabel}>Feature on homepage</div>
+            <div className={styles.toggleHint}>Shown in the Featured Sarees section. If none are featured, top-stock products appear instead.</div>
+          </div>
+        </label>
       </div>
 
       {/* Story */}
       <div className={styles.section}>
         <div className={styles.sectionTitle}>Story & Details</div>
+
+        <div className={styles.field}>
+          <label className={styles.label}>Maker&rsquo;s Image</label>
+          <div
+            className={styles.imageSlot}
+            style={{ width: 160, height: 160, borderRadius: 8, cursor: 'pointer' }}
+            onClick={() => makerFileRef.current?.click()}
+          >
+            {uploadingMaker ? (
+              <span className={styles.uploading}>Uploading…</span>
+            ) : makerImageUrl ? (
+              <>
+                <img src={makerImageUrl} alt="Maker" />
+                <div className={styles.imageSlotOverlay}>
+                  <span className={styles.imageSlotOverlayText}>Change</span>
+                </div>
+              </>
+            ) : (
+              <div className={styles.imageSlotEmpty}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 4v12M4 10h12" stroke="#8C7B6B" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+                <span>Add photo</span>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              ref={makerFileRef}
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleMakerFileChange(f); }}
+            />
+          </div>
+          <p style={{ fontSize: 12, color: '#8C7B6B', marginTop: 6 }}>
+            Photo of the weaver or workshop — shown in the Maker&rsquo;s Note section on the product page.
+          </p>
+        </div>
+
         <div className={styles.field}>
           <label className={styles.label}>Description</label>
           <textarea

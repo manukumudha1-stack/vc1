@@ -1,6 +1,19 @@
+import { connectDB } from '@/lib/db';
+import SiteConfigModel from '@/lib/models/SiteConfig';
+import PageContent from '@/components/store/PageContent';
+
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Shipping Policy — VC' };
 
-export default function ShippingPage() {
+export default async function ShippingPage() {
+  await connectDB();
+  const cfg = await SiteConfigModel.findOne({}).lean();
+  const dbContent = cfg?.pageContents?.shipping ?? '';
+
+  if (dbContent) {
+    return <PageContent eyebrow="Delivery" title="Shipping Policy" content={dbContent} />;
+  }
+
   return (
     <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px' }}>
       <p className="eyebrow" style={{ marginBottom: 8 }}>Delivery</p>

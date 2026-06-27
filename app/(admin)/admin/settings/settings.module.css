@@ -1,0 +1,244 @@
+.page {
+  padding: 32px;
+  background: #FAF6EF;
+  min-height: 100%;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: #1C1208;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.section {
+  background: #FFF8EE;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+  margin-bottom: -8px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  color: #1C1208;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.sectionHeader .sectionTitle {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8C7B6B;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input {
+  background: #FAF6EF;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #1C1208;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: rgba(201, 168, 76, 0.65);
+}
+
+.textarea {
+  background: #FAF6EF;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #1C1208;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Courier New', monospace;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.textarea:focus {
+  border-color: rgba(201, 168, 76, 0.65);
+}
+
+.hint {
+  font-size: 12px;
+  color: #8C7B6B;
+  line-height: 1.6;
+  margin-top: -8px;
+}
+
+.hint code {
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: #7a5c1e;
+}
+
+/* Link row: two inputs side by side + delete button */
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.linkRow .input {
+  flex: 1;
+}
+
+.btnDelete {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid rgba(139, 26, 26, 0.3);
+  color: #8B1A1A;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btnDelete:hover {
+  background: rgba(139, 26, 26, 0.08);
+  border-color: rgba(139, 26, 26, 0.5);
+}
+
+/* Ghost gold "Add link" button */
+.btnAddLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 100px;
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  color: #8a6d2a;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.btnAddLink:hover {
+  background: rgba(201, 168, 76, 0.1);
+  border-color: rgba(201, 168, 76, 0.7);
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btnSave {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border-radius: 100px;
+  background: #C9A84C;
+  color: #1C1208;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btnSave:hover {
+  background: #b8973f;
+}
+
+.btnSave:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  background: rgba(139, 26, 26, 0.08);
+  border: 1px solid rgba(139, 26, 26, 0.25);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #8B1A1A;
+}
+
+.success {
+  background: rgba(26, 107, 107, 0.08);
+  border: 1px solid rgba(26, 107, 107, 0.25);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #1A6B6B;
+}

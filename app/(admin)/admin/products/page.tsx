@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import ProductModel from '@/lib/models/Product';
 import CollectionModel from '@/lib/models/Collection';
 import { formatINR, stockStatus } from '@/lib/utils';
+import ProductDeleteButton from './ProductDeleteButton';
 import styles from './products.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -81,6 +82,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               collectionId: { _id: string; name: string } | string;
               price: number;
               stockQty: number;
+              isFeatured: boolean;
               isActive: boolean;
               images?: { url: string }[];
             }) => {
@@ -98,6 +100,9 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                   </td>
                   <td>
                     <div className={styles.productName}>{p.name}</div>
+                    {p.isFeatured && (
+                      <span className={styles.featuredBadge}>★ Featured</span>
+                    )}
                   </td>
                   <td><span className={styles.sku}>{p.sku}</span></td>
                   <td>{colName}</td>
@@ -111,6 +116,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                       <Link href={`/admin/products/${p._id}/edit`} className={styles.btnEdit}>
                         Edit
                       </Link>
+                      <ProductDeleteButton slug={p.slug} name={p.name} />
                     </div>
                   </td>
                 </tr>
