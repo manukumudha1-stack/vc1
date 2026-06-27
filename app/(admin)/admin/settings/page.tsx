@@ -26,10 +26,12 @@ export default async function SettingsPage() {
   const items = JSON.parse(JSON.stringify(lookbookItems));
 
   const emptyPageContents = { ourStory: '', theWeavers: '', care: '', shipping: '', returns: '', privacy: '', terms: '' };
+  const emptyHeroBanner = { enabled: false, line1: '', line2: '' };
 
   const initialData = {
-    trustItems: cfg?.trustItems ?? DEFAULT_TRUST,
+    trustItems:   cfg?.trustItems ?? DEFAULT_TRUST,
     pageContents: { ...emptyPageContents, ...(cfg?.pageContents ?? {}) },
+    heroBanner:   { ...emptyHeroBanner,   ...(cfg?.heroBanner  ?? {}) },
   };
 
   return (

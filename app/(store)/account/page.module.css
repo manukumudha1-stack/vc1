@@ -53,6 +53,38 @@
   color: var(--color-text-secondary);
 }
 
+/* ===== QUICK LINKS ===== */
+.quickLinks {
+  display: flex;
+  gap: 16px;
+  padding: 32px 0;
+  flex-wrap: wrap;
+}
+
+.quickCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 20px 24px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+  min-width: 160px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.quickCard:hover {
+  background: var(--color-background-secondary);
+  border-color: var(--color-text-secondary);
+}
+
+.quickLabel {
+  font-size: 18px;
+  font-weight: 400;
+}
+
 /* ===== SECTION ===== */
 .section {
   padding-top: 40px;

@@ -15,12 +15,19 @@ export interface IPageContents {
   terms: string;
 }
 
+export interface IHeroBanner {
+  enabled: boolean;
+  line1: string;
+  line2: string;
+}
+
 export interface ISiteConfig extends Document {
   trustItems: string[];
   footerShopLinks: ILinkItem[];
   footerHouseLinks: ILinkItem[];
   footerCareLinks: ILinkItem[];
   pageContents: IPageContents;
+  heroBanner: IHeroBanner;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,6 +49,15 @@ const PageContentsSchema = new Schema<IPageContents>(
     returns:    { type: String, default: '' },
     privacy:    { type: String, default: '' },
     terms:      { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const HeroBannerSchema = new Schema<IHeroBanner>(
+  {
+    enabled: { type: Boolean, default: false },
+    line1:   { type: String, default: '' },
+    line2:   { type: String, default: '' },
   },
   { _id: false }
 );
@@ -72,6 +88,10 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
     pageContents: {
       type: PageContentsSchema,
       default: () => ({ ourStory: '', theWeavers: '', care: '', shipping: '', returns: '', privacy: '', terms: '' }),
+    },
+    heroBanner: {
+      type: HeroBannerSchema,
+      default: () => ({ enabled: false, line1: '', line2: '' }),
     },
   },
   { timestamps: true }

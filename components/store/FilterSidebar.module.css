@@ -7,6 +7,12 @@
   top: 88px;
 }
 
+@media (max-width: 768px) {
+  .sidebar {
+    position: static;
+  }
+}
+
 .sidebarHead {
   display: flex;
   align-items: center;

@@ -53,6 +53,15 @@ export default async function ProductPage({ params }: Props) {
   const stock  = stockStatus(p.stockQty);
   const images = p.images ?? [];
 
+  const now = new Date();
+  const off = p.offer;
+  const offerLive =
+    off?.isActive &&
+    off.discountPct > 0 &&
+    (!off.startDate || new Date(off.startDate) <= now) &&
+    (!off.endDate   || new Date(off.endDate)   >= now);
+  const offerPrice = offerLive ? Math.round(p.price * (1 - off.discountPct / 100)) : null;
+
   const accordionItems = [
     ...(p.careInstructions ? [{ title: 'Care Instructions', content: p.careInstructions }] : []),
     { title: 'Fabric & Weave', content: `Fabric: ${p.fabric || 'Silk'}\nWeave: ${p.zariType || 'Traditional'}\nRegion: ${p.region || '—'}` },
@@ -87,7 +96,15 @@ export default async function ProductPage({ params }: Props) {
           </div>
 
           {/* Price */}
-          <p className={`price ${styles.price}`}>{formatINR(p.price)}</p>
+          {offerPrice ? (
+            <div className={styles.priceRow}>
+              <span className={styles.offerBadge}>{off!.discountPct}% off</span>
+              <p className={`price ${styles.offerPrice}`}>{formatINR(offerPrice)}</p>
+              <p className={styles.originalPrice}>{formatINR(p.price)}</p>
+            </div>
+          ) : (
+            <p className={`price ${styles.price}`}>{formatINR(p.price)}</p>
+          )}
 
           {/* Stock */}
           {stock === 'low' && p.stockQty > 0 && (
@@ -185,6 +202,7 @@ export default async function ProductPage({ params }: Props) {
             {related.map((r: { _id: string; slug: string; name: string; price: number; fabric: string; region: string; stockQty: number; images?: { url: string }[] }) => (
               <ProductCard
                 key={r._id}
+                productId={r._id}
                 name={r.name}
                 slug={r.slug}
                 price={r.price}

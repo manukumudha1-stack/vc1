@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { formatINR } from '@/lib/utils';
+import { useWishlistStore } from '@/store/wishlist';
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
+  productId?: string;
   name: string;
   slug: string;
   price: number;
@@ -19,6 +21,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({
+  productId,
   name,
   slug,
   price,
@@ -30,7 +33,12 @@ export default function ProductCard({
   imageCaption,
   urgency,
 }: ProductCardProps) {
-  const [wishlisted, setWishlisted] = useState(false);
+  const productIds = useWishlistStore((s) => s.productIds);
+  const init       = useWishlistStore((s) => s.init);
+  const toggle     = useWishlistStore((s) => s.toggle);
+  const wishlisted = productId ? productIds.includes(productId) : false;
+
+  useEffect(() => { init(); }, [init]);
 
   // Effective hover image: second image, or fall back to first image (no gradient flash)
   const effectiveHoverUrl = hoverImageUrl ?? imageUrl;
@@ -56,7 +64,7 @@ export default function ProductCard({
       {/* Wishlist */}
       <button
         className={`${styles.wishlistBtn} ${wishlisted ? styles.wishlisted : ''}`}
-        onClick={() => setWishlisted((v) => !v)}
+        onClick={() => productId && toggle(productId)}
         aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill={wishlisted ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">

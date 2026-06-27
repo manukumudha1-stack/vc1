@@ -17,6 +17,7 @@ export interface IUser extends Document {
   phone?: string;
   avatar?: string;
   addresses: IAddress[];
+  wishlist: mongoose.Types.ObjectId[];
   segment: 'new' | 'returning' | 'vip';
   preferences: {
     favouriteCollection: string;
@@ -47,6 +48,7 @@ const UserSchema = new Schema<IUser>(
     phone:    { type: String, default: '' },
     avatar:   { type: String, default: '' },
     addresses:[AddressSchema],
+    wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product', default: [] }],
     segment:  { type: String, enum: ['new', 'returning', 'vip'], default: 'new' },
     preferences: {
       favouriteCollection: { type: String, default: '' },

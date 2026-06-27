@@ -9,3 +9,10 @@
   min-width: 0;
   overflow-x: clip;
 }
+
+@media (max-width: 768px) {
+  .main {
+    padding-top: 60px;
+    width: 100%;
+  }
+}

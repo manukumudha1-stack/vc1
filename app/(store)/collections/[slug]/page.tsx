@@ -127,6 +127,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
               {products.map((p: { _id: string; slug: string; name: string; price: number; fabric: string; region: string; stockQty: number; images?: { url: string }[] }) => (
                 <ProductCard
                   key={p._id}
+                  productId={p._id}
                   name={p.name}
                   slug={p.slug}
                   price={p.price}

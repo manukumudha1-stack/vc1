@@ -185,3 +185,23 @@
   padding: 2px 8px;
   white-space: nowrap;
 }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .page   { padding: 16px; }
+  .search { width: 100%; }
+  .topbar { gap: 12px; }
+
+  .card  { overflow-x: auto; }
+  .table { min-width: 560px; }
+
+  .table th:last-child,
+  .table td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    box-shadow: -3px 0 6px rgba(0,0,0,0.06);
+  }
+  .table th:last-child { background: #F0E9DA; }
+  .table td:last-child { background: #FFF8EE; }
+}

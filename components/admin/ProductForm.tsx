@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import styles from './ProductForm.module.css';
 
 interface Collection {
@@ -31,8 +30,15 @@ interface ProductFormData {
   images: string[];
 }
 
+interface OfferInit {
+  isActive?: boolean;
+  discountPct?: number;
+  startDate?: string | null;
+  endDate?: string | null;
+}
+
 interface Props {
-  initialData?: Partial<ProductFormData> & { isFeatured?: boolean };
+  initialData?: Partial<ProductFormData> & { isFeatured?: boolean; offer?: OfferInit | null };
   mode: 'new' | 'edit';
 }
 
@@ -53,13 +59,16 @@ const BLOUSE_OPTIONS = [
 ];
 
 export default function ProductForm({ initialData, mode }: Props) {
-  const router = useRouter();
   const [collections, setCollections] = useState<Collection[]>([]);
   const [images, setImages] = useState<string[]>(initialData?.images ?? Array(6).fill(''));
   const [uploading, setUploading] = useState<number | null>(null);
   const [makerImageUrl, setMakerImageUrl] = useState(initialData?.makerImageUrl ?? '');
   const [uploadingMaker, setUploadingMaker] = useState(false);
   const [isFeatured, setIsFeatured] = useState<boolean>(initialData?.isFeatured === true);
+  const [offerActive, setOfferActive] = useState<boolean>(initialData?.offer?.isActive === true);
+  const [offerDiscountPct, setOfferDiscountPct] = useState<number | string>(initialData?.offer?.discountPct ?? '');
+  const [offerStartDate, setOfferStartDate] = useState<string>(initialData?.offer?.startDate ? initialData.offer.startDate.slice(0, 10) : '');
+  const [offerEndDate, setOfferEndDate] = useState<string>(initialData?.offer?.endDate ? initialData.offer.endDate.slice(0, 10) : '');
   const [sku] = useState<string>(() => initialData?.sku || generateSKU());
   const makerFileRef = useRef<HTMLInputElement | null>(null);
   const [saving, setSaving] = useState(false);
@@ -174,6 +183,12 @@ export default function ProductForm({ initialData, mode }: Props) {
         images: images.filter(Boolean).map(url => ({ url, caption: '', cloudinaryId: '' })),
         makerImageUrl,
         isFeatured,
+        offer: {
+          isActive: offerActive,
+          discountPct: Number(offerDiscountPct) || 0,
+          startDate: offerStartDate || null,
+          endDate: offerEndDate || null,
+        },
       };
 
       let res: Response;
@@ -197,7 +212,7 @@ export default function ProductForm({ initialData, mode }: Props) {
         throw new Error(data.error || 'Failed to save product');
       }
       setSuccess('Product saved successfully.');
-      setTimeout(() => router.push('/admin/products'), 1200);
+      setTimeout(() => setSuccess(''), 3500);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to save product.');
     } finally {
@@ -208,7 +223,15 @@ export default function ProductForm({ initialData, mode }: Props) {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       {error && <div className={styles.error}>{error}</div>}
-      {success && <div className={styles.success}>{success}</div>}
+
+      {/* Floating snackbar */}
+      <div className={`${styles.snackbar} ${success ? styles.snackbarVisible : ''}`}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" stroke="#fff" strokeWidth="1.5"/>
+          <path d="M5 8l2 2 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        {success}
+      </div>
 
       {/* Images */}
       <div className={styles.section}>
@@ -392,6 +415,80 @@ export default function ProductForm({ initialData, mode }: Props) {
             <div className={styles.toggleHint}>Shown in the Featured Sarees section. If none are featured, top-stock products appear instead.</div>
           </div>
         </label>
+      </div>
+
+      {/* Offer / Discount */}
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>Offer &amp; Discount</div>
+
+        <label className={styles.toggleRow}>
+          <div
+            className={`${styles.toggle} ${offerActive ? styles.toggleOn : ''}`}
+            onClick={() => setOfferActive(v => !v)}
+            role="switch"
+            aria-checked={offerActive}
+            tabIndex={0}
+            onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') setOfferActive(v => !v); }}
+          >
+            <div className={styles.toggleThumb} />
+          </div>
+          <div>
+            <div className={styles.toggleLabel}>Enable offer</div>
+            <div className={styles.toggleHint}>Offer is only shown when active and today falls within the start/end dates.</div>
+          </div>
+        </label>
+
+        {offerActive && (
+          <>
+            <div className={styles.grid3}>
+              <div className={styles.field}>
+                <label className={styles.label}>Discount %</label>
+                <input
+                  className={styles.input}
+                  type="number"
+                  min={1}
+                  max={99}
+                  value={offerDiscountPct}
+                  onChange={e => setOfferDiscountPct(e.target.value)}
+                  placeholder="e.g. 15"
+                  required={offerActive}
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>Start Date</label>
+                <input
+                  className={styles.input}
+                  type="date"
+                  value={offerStartDate}
+                  onChange={e => setOfferStartDate(e.target.value)}
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>End Date</label>
+                <input
+                  className={styles.input}
+                  type="date"
+                  value={offerEndDate}
+                  onChange={e => setOfferEndDate(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {Number(offerDiscountPct) > 0 && Number(form.price) > 0 && (
+              <div className={styles.offerPreview}>
+                <span className={styles.offerPreviewLabel}>Offer price preview — </span>
+                <span className={styles.offerPreviewOriginal}>
+                  ₹{Number(form.price).toLocaleString('en-IN')}
+                </span>
+                <span className={styles.offerPreviewArrow}> → </span>
+                <span className={styles.offerPreviewPrice}>
+                  ₹{Math.round(Number(form.price) * (1 - Number(offerDiscountPct) / 100)).toLocaleString('en-IN')}
+                </span>
+                <span className={styles.offerPreviewBadge}>{offerDiscountPct}% off</span>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Story */}

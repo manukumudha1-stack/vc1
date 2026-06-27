@@ -36,18 +36,25 @@
 
 .heroH1 {
   font-size: clamp(40px, 5.5vw, 72px);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.1;
-  letter-spacing: 0.02em;
-  color: #FAF6EF;
+  letter-spacing: 0.03em;
+  color: #F5E6C8;
   margin-bottom: 20px;
+}
+
+.heroAccent {
+  color: #A8832A;
+  font-style: italic;
 }
 
 .heroSub {
   font-size: 16px;
-  color: rgba(250, 246, 239, 0.78);
+  font-style: italic;
+  color: rgba(201, 168, 76, 0.72);
   max-width: 440px;
   line-height: 1.7;
+  letter-spacing: 0.01em;
   margin-bottom: 36px;
 }
 
@@ -55,6 +62,49 @@
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+/* Hero promo banner — right-side overlay */
+.heroBanner {
+  position: absolute;
+  right: var(--margin-desktop);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  text-align: right;
+  pointer-events: none;
+}
+
+.heroBannerLine1 {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7.5vw, 108px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: #C4706A;
+  text-shadow:
+    0 2px 32px rgba(0,0,0,0.55),
+    0 1px 4px rgba(0,0,0,0.4);
+}
+
+.heroBannerLine2 {
+  font-size: clamp(14px, 1.4vw, 20px);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+  max-width: 360px;
+}
+
+@media (max-width: 768px) {
+  .heroBanner {
+    display: none;
+  }
 }
 
 /* ===== TRUST STRIP ===== */

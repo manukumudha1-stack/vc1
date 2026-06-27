@@ -6,6 +6,13 @@ export interface IProductImage {
   cloudinaryId: string;
 }
 
+export interface IOffer {
+  isActive: boolean;
+  discountPct: number;
+  startDate: Date | null;
+  endDate: Date | null;
+}
+
 export interface IProduct extends Document {
   name: string;
   slug: string;
@@ -26,6 +33,7 @@ export interface IProduct extends Document {
   careInstructions: string;
   isFeatured: boolean;
   isActive: boolean;
+  offer: IOffer;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,6 +43,16 @@ const ProductImageSchema = new Schema<IProductImage>(
     url:          { type: String, required: true },
     caption:      { type: String, default: '' },
     cloudinaryId: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const OfferSchema = new Schema<IOffer>(
+  {
+    isActive:    { type: Boolean, default: false },
+    discountPct: { type: Number, default: 0, min: 0, max: 100 },
+    startDate:   { type: Date, default: null },
+    endDate:     { type: Date, default: null },
   },
   { _id: false }
 );
@@ -60,6 +78,7 @@ const ProductSchema = new Schema<IProduct>(
     careInstructions: { type: String, default: '' },
     isFeatured:       { type: Boolean, default: false },
     isActive:         { type: Boolean, default: true },
+    offer:            { type: OfferSchema, default: () => ({ isActive: false, discountPct: 0, startDate: null, endDate: null }) },
   },
   { timestamps: true }
 );

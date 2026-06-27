@@ -62,6 +62,7 @@ export default async function SareesPage() {
                 </div>
               )}
               <ProductCard
+                productId={String(p._id)}
                 name={p.name}
                 slug={p.slug}
                 price={p.price}

@@ -35,6 +35,7 @@ export default async function EditProductPage({ params }: Props) {
     weaver: serialized.weaver,
     makerImageUrl: serialized.makerImageUrl ?? '',
     isFeatured: serialized.isFeatured ?? false,
+    offer: serialized.offer ?? null,
     description: serialized.description,
     story: serialized.story,
     careInstructions: serialized.careInstructions,

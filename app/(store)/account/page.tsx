@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 async function getAccountData(email: string) {
   await connectDB();
   const user   = await UserModel.findOne({ email }).lean();
-  if (!user) return { user: null, orders: [] };
+  if (!user) return { user: null, orders: [], wishlistCount: 0 };
 
   const userId = (user as { _id: unknown })._id;
   const orders = await OrderModel
@@ -20,9 +20,12 @@ async function getAccountData(email: string) {
     .sort({ createdAt: -1 })
     .lean();
 
+  const wishlistCount = ((user as { wishlist?: unknown[] }).wishlist ?? []).length;
+
   return {
     user:   JSON.parse(JSON.stringify(user)),
     orders: JSON.parse(JSON.stringify(orders)),
+    wishlistCount,
   };
 }
 
@@ -30,7 +33,7 @@ export default async function AccountPage() {
   const session = await auth();
   if (!session?.user?.email) redirect('/auth/signin');
 
-  const { user, orders } = await getAccountData(session.user.email);
+  const { user, orders, wishlistCount } = await getAccountData(session.user.email);
 
   const displayName  = user?.name ?? session.user.name ?? 'Valued Customer';
   const displayEmail = session.user.email;
@@ -63,6 +66,19 @@ export default async function AccountPage() {
             {user.segment.charAt(0).toUpperCase() + user.segment.slice(1)} member
           </span>
         )}
+      </div>
+
+      <hr className="hairline-rule" />
+
+      {/* Quick links */}
+      <div className={styles.quickLinks}>
+        <Link href="/account/wishlist" className={styles.quickCard}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span className={`serif ${styles.quickLabel}`}>Wishlist</span>
+          <span className="caption">{wishlistCount} saved</span>
+        </Link>
       </div>
 
       <hr className="hairline-rule" />

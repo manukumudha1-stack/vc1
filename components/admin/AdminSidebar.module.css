@@ -8,7 +8,92 @@
   position: sticky;
   top: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   border-right: 1px solid rgba(201, 168, 76, 0.15);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hamburger {
+  display: none;
+}
+
+.overlay {
+  display: none;
+}
+
+.closeBtn {
+  display: none;
+}
+
+/* ===== DESKTOP COLLAPSE TOGGLE ===== */
+.collapseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: rgba(250, 246, 239, 0.45);
+  transition: color 0.2s, background 0.2s;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.collapseBtn:hover {
+  color: #FAF6EF;
+  background: rgba(250, 246, 239, 0.08);
+}
+
+/* ===== COLLAPSED STATE ===== */
+.sidebarCollapsed {
+  width: 64px;
+  min-width: 64px;
+}
+
+.sidebarCollapsed .brand {
+  padding: 28px 8px 20px;
+}
+
+.brandLogoOnly {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.sidebarCollapsed .navItem {
+  justify-content: center;
+  padding: 10px 0;
+  margin: 1px 4px;
+  gap: 0;
+}
+
+.sidebarCollapsed .navItem svg {
+  opacity: 0.75;
+}
+
+.sidebarCollapsed .navItem.active svg {
+  opacity: 1;
+}
+
+.sidebarCollapsed .user {
+  padding: 12px 8px;
+  align-items: center;
+}
+
+.sidebarCollapsed .userInner {
+  justify-content: center;
+}
+
+.sidebarCollapsed .signOutBtn {
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.brandRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .brand {
@@ -29,7 +114,7 @@
 }
 
 .logoTag {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #8C7B6B;
@@ -46,7 +131,7 @@
 
 .navSection {
   padding: 16px 16px 4px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(140, 123, 107, 0.5);
@@ -137,7 +222,7 @@
   margin-top: 10px;
   padding: 8px 10px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -149,4 +234,76 @@
 .signOutBtn:hover {
   color: rgba(250, 246, 239, 0.85);
   background: rgba(250, 246, 239, 0.06);
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 200;
+    transform: translateX(-100%);
+    /* Override width transition — mobile uses transform */
+    transition: transform 0.28s cubic-bezier(.4, 0, .2, 1);
+    box-shadow: none;
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+    box-shadow: 6px 0 32px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Collapsed state has no effect on mobile */
+  .sidebarCollapsed {
+    width: 248px;
+    min-width: 248px;
+  }
+
+  .hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 100;
+    width: 40px;
+    height: 40px;
+    background: #1C1208;
+    border: 1px solid rgba(201, 168, 76, 0.25);
+    border-radius: 8px;
+    color: #FAF6EF;
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 150;
+    backdrop-filter: blur(2px);
+  }
+
+  .closeBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: rgba(250, 246, 239, 0.5);
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .closeBtn:hover {
+    color: #FAF6EF;
+    background: rgba(250, 246, 239, 0.08);
+  }
+
+  .collapseBtn {
+    display: none;
+  }
 }

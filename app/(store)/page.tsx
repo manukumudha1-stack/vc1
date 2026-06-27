@@ -40,19 +40,22 @@ async function getHomeData() {
       : [];
     const featuredProducts = [...markedFeatured, ...topStock];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hb = (siteConfig as any)?.heroBanner;
     return {
       collections:      JSON.parse(JSON.stringify(collections)),
       featuredProducts: JSON.parse(JSON.stringify(featuredProducts)),
       lookbookItems:    JSON.parse(JSON.stringify(lookbookItems)),
       trustItems:       (siteConfig?.trustItems as string[] | undefined) ?? DEFAULT_TRUST,
+      heroBanner:       hb?.enabled && hb?.line1 ? { line1: hb.line1 as string, line2: (hb.line2 ?? '') as string } : null,
     };
   } catch {
-    return { collections: [], featuredProducts: [], lookbookItems: [], trustItems: DEFAULT_TRUST };
+    return { collections: [], featuredProducts: [], lookbookItems: [], trustItems: DEFAULT_TRUST, heroBanner: null };
   }
 }
 
 export default async function HomePage() {
-  const { collections, featuredProducts, lookbookItems, trustItems } = await getHomeData();
+  const { collections, featuredProducts, lookbookItems, trustItems, heroBanner } = await getHomeData();
 
   return (
     <div className={styles.page}>
@@ -63,7 +66,7 @@ export default async function HomePage() {
         </div>
         <div className={styles.heroContent}>
           <h1 className={`serif ${styles.heroH1}`}>
-            Woven in gold.<br />
+            Woven in <span className={styles.heroAccent}>gold.</span><br />
             Worn through generations.
           </h1>
           <p className={styles.heroSub}>
@@ -78,6 +81,15 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
+
+        {heroBanner && (
+          <div className={styles.heroBanner}>
+            <span className={styles.heroBannerLine1}>{heroBanner.line1}</span>
+            {heroBanner.line2 && (
+              <span className={styles.heroBannerLine2}>{heroBanner.line2}</span>
+            )}
+          </div>
+        )}
       </section>
 
       {/* ===== TRUST STRIP ===== */}
@@ -182,6 +194,7 @@ export default async function HomePage() {
             featuredProducts.map((p: { _id: string; slug: string; name: string; price: number; fabric: string; region: string; stockQty: number; images?: { url: string }[] }, i: number) => (
               <RevealOnScroll key={p._id} delay={i * 80}>
                 <ProductCard
+                  productId={p._id}
                   name={p.name}
                   slug={p.slug}
                   price={p.price}

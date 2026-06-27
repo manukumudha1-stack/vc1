@@ -38,8 +38,6 @@ export default async function CustomerDetailPage({ params }: Props) {
 
   return (
     <div className={styles.page}>
-      <Link href="/admin/customers" className={styles.back}>← Back to Customers</Link>
-
       <div className={styles.topbar}>
         <h1 className={styles.pageTitle}>{u.name}</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

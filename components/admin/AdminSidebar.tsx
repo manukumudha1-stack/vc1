@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
@@ -72,20 +73,7 @@ const navItems = [
       </svg>
     ),
   },
-  {
-    label: 'Discounts',
-    href: '/admin/discounts',
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M5 11L11 5" stroke="currentColor" strokeWidth="1.4"/>
-        <circle cx="5" cy="5" r="1.5" stroke="currentColor" strokeWidth="1.4" fill="none"/>
-        <circle cx="11" cy="11" r="1.5" stroke="currentColor" strokeWidth="1.4" fill="none"/>
-        <path d="M2 8h.01M14 8h.01M8 2v.01M8 14v.01" stroke="currentColor" strokeWidth="1.4"/>
-        <rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" strokeWidth="1.4" fill="none"/>
-      </svg>
-    ),
-  },
-  {
+{
     label: 'Reports',
     href: '/admin/reports',
     icon: (
@@ -110,6 +98,8 @@ const navItems = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   function isActive(item: { href: string; exact?: boolean }) {
     if (item.exact) return pathname === item.href;
@@ -120,48 +110,104 @@ export default function AdminSidebar() {
   const initial = email.charAt(0).toUpperCase();
 
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.brand}>
-        <div className={styles.logo}>
-          V<span className={styles.logoAccent}>C</span>
-        </div>
-        <div className={styles.logoTag}>Atelier Admin</div>
-      </div>
+    <>
+      {/* Mobile hamburger button */}
+      <button
+        className={styles.hamburger}
+        onClick={() => setOpen(true)}
+        aria-label="Open menu"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
 
-      <nav className={styles.nav}>
-        <div className={styles.navSection}>Menu</div>
-        {navItems.map(item => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`${styles.navItem}${isActive(item) ? ' ' + styles.active : ''}`}
-          >
-            {item.icon}
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      {/* Backdrop */}
+      {open && <div className={styles.overlay} onClick={() => setOpen(false)} />}
 
-      <div className={styles.user}>
-        <div className={styles.userInner}>
-          <div className={styles.avatar}>{initial}</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className={styles.userEmail}>{email}</div>
-            <div className={styles.userRole}>Admin</div>
+      <aside className={`${styles.sidebar}${open ? ' ' + styles.sidebarOpen : ''}${collapsed ? ' ' + styles.sidebarCollapsed : ''}`}>
+        <div className={styles.brand}>
+          <div className={styles.brandRow}>
+            <div className={collapsed ? styles.brandLogoOnly : ''}>
+              <div className={styles.logo}>
+                V<span className={styles.logoAccent}>C</span>
+              </div>
+              {!collapsed && <div className={styles.logoTag}>Atelier Admin</div>}
+            </div>
+
+            {/* Mobile close button */}
+            <button
+              className={styles.closeBtn}
+              onClick={() => setOpen(false)}
+              aria-label="Close menu"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+
+            {/* Desktop collapse toggle */}
+            <button
+              className={styles.collapseBtn}
+              onClick={() => setCollapsed(v => !v)}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {collapsed ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              )}
+            </button>
           </div>
         </div>
-        <button
-          className={styles.signOutBtn}
-          onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-          Sign out
-        </button>
-      </div>
-    </aside>
+
+        <nav className={styles.nav}>
+          {!collapsed && <div className={styles.navSection}>Menu</div>}
+          {navItems.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              className={`${styles.navItem}${isActive(item) ? ' ' + styles.active : ''}`}
+              onClick={() => setOpen(false)}
+            >
+              {item.icon}
+              {!collapsed && <span>{item.label}</span>}
+            </Link>
+          ))}
+        </nav>
+
+        <div className={styles.user}>
+          <div className={styles.userInner}>
+            <div className={styles.avatar}>{initial}</div>
+            {!collapsed && (
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className={styles.userEmail}>{email}</div>
+                <div className={styles.userRole}>Admin</div>
+              </div>
+            )}
+          </div>
+          <button
+            className={styles.signOutBtn}
+            onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+            title={collapsed ? 'Sign out' : undefined}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            {!collapsed && 'Sign out'}
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

@@ -81,3 +81,12 @@
   color: #C9A84C;
   text-decoration: underline;
 }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+}
