@@ -24,6 +24,7 @@ interface Props {
     trustItems: string[];
     pageContents: PageContents;
     heroBanner: HeroBanner;
+    freeShippingThreshold: number;
   };
 }
 
@@ -35,6 +36,7 @@ export default function SettingsForm({ initialData }: Props) {
   );
   const [pageContents, setPageContents] = useState<PageContents>(initialData.pageContents);
   const [heroBanner, setHeroBanner] = useState<HeroBanner>(initialData.heroBanner);
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState<number>(initialData.freeShippingThreshold);
 
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -54,7 +56,7 @@ export default function SettingsForm({ initialData }: Props) {
       const res = await fetch('/api/site-config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trustItems, pageContents, heroBanner }),
+        body: JSON.stringify({ trustItems, pageContents, heroBanner, freeShippingThreshold }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -89,23 +91,56 @@ export default function SettingsForm({ initialData }: Props) {
           </label>
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Line 1 — Big text (e.g. &ldquo;UP TO 30% OFF&rdquo;)</label>
+          <label className={styles.label}>
+            Line 1 — Big text (e.g. &ldquo;UP TO 30% OFF&rdquo;)
+            <span style={{ marginLeft: 8, fontWeight: 400, color: heroBanner.line1.length > 30 ? '#c0392b' : '#888', fontSize: 12 }}>
+              {heroBanner.line1.length}/30
+            </span>
+          </label>
           <input
             type="text"
             className={styles.input}
             value={heroBanner.line1}
+            maxLength={30}
             onChange={e => setHeroBanner(prev => ({ ...prev, line1: e.target.value }))}
             placeholder="e.g. UP TO 30% OFF"
           />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Line 2 — Detail text (e.g. &ldquo;On all Paithani silks this season&rdquo;)</label>
+          <label className={styles.label}>
+            Line 2 — Detail text (e.g. &ldquo;On all Paithani silks this season&rdquo;)
+            <span style={{ marginLeft: 8, fontWeight: 400, color: heroBanner.line2.length > 30 ? '#c0392b' : '#888', fontSize: 12 }}>
+              {heroBanner.line2.length}/30
+            </span>
+          </label>
           <input
             type="text"
             className={styles.input}
             value={heroBanner.line2}
+            maxLength={30}
             onChange={e => setHeroBanner(prev => ({ ...prev, line2: e.target.value }))}
             placeholder="e.g. On all Paithani silks this season"
+          />
+        </div>
+      </div>
+
+      {/* Shipping */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Shipping</h2>
+        <div className={styles.field}>
+          <label className={styles.label}>Free shipping threshold (₹)</label>
+          <p className={styles.hint} style={{ marginBottom: 8 }}>
+            Orders at or above this amount show &ldquo;Free&rdquo; shipping at checkout.
+            Orders below it show &ldquo;Added into product cost&rdquo;.
+          </p>
+          <input
+            type="number"
+            className={styles.input}
+            min={0}
+            step={100}
+            value={freeShippingThreshold}
+            onChange={e => setFreeShippingThreshold(Math.max(0, Number(e.target.value)))}
+            style={{ maxWidth: 180 }}
           />
         </div>
       </div>

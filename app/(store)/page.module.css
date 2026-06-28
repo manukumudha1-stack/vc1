@@ -64,28 +64,29 @@
   flex-wrap: wrap;
 }
 
-/* Hero promo banner — right-side overlay */
+/* Hero promo banner — bottom-right overlay */
 .heroBanner {
   position: absolute;
   right: var(--margin-desktop);
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: clamp(28px, 5vh, 60px);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 14px;
+  gap: 10px;
   text-align: right;
   pointer-events: none;
+  max-width: 42%;
 }
 
 .heroBannerLine1 {
   font-family: var(--font-display);
-  font-size: clamp(52px, 7.5vw, 108px);
+  font-size: clamp(36px, 4.5vw, 68px);
   font-weight: 300;
   line-height: 1;
   letter-spacing: 0.03em;
   color: #C4706A;
+  word-break: break-word;
   text-shadow:
     0 2px 32px rgba(0,0,0,0.55),
     0 1px 4px rgba(0,0,0,0.4);

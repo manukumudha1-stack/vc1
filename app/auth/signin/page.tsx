@@ -4,7 +4,7 @@ import { useState, FormEvent, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-type View = 'signin' | 'register' | 'forgot' | 'check-email';
+type View = 'signin' | 'register' | 'forgot' | 'enter-otp';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -111,8 +111,11 @@ function SignInPageInner() {
   const [regEmail, setRegEmail]             = useState('');
   const [regEmailError, setRegEmailError]   = useState('');
   const [regPhone, setRegPhone]             = useState('');
+  const [regPhoneError, setRegPhoneError]   = useState('');
   const [regPassword, setRegPassword]       = useState('');
   const [regConfirm, setRegConfirm]         = useState('');
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [showRegConfirm, setShowRegConfirm]   = useState(false);
   const [regError, setRegError]             = useState('');
   const [regLoading, setRegLoading]         = useState(false);
 
@@ -120,6 +123,13 @@ function SignInPageInner() {
   const [forgotError, setForgotError]       = useState('');
   const [forgotLoading, setForgotLoading]   = useState(false);
   const [sentEmail, setSentEmail]           = useState('');
+
+  const [otpValue, setOtpValue]             = useState('');
+  const [otpPassword, setOtpPassword]       = useState('');
+  const [otpConfirm, setOtpConfirm]         = useState('');
+  const [otpError, setOtpError]             = useState('');
+  const [otpLoading, setOtpLoading]         = useState(false);
+  const [otpSuccess, setOtpSuccess]         = useState(false);
 
   async function handleSignIn(e: FormEvent) {
     e.preventDefault();
@@ -141,10 +151,12 @@ function SignInPageInner() {
   async function handleRegister(e: FormEvent) {
     e.preventDefault();
     setRegError('');
+    setRegEmailError('');
+    setRegPhoneError('');
 
     if (!regName.trim()) { setRegError('Name is required.'); return; }
-    if (!EMAIL_RE.test(regEmail)) { setRegError('Please enter a valid email.'); return; }
-    if (!/^\+?[0-9]{10,13}$/.test(regPhone.replace(/\s/g, ''))) { setRegError('Please enter a valid phone number.'); return; }
+    if (!EMAIL_RE.test(regEmail)) { setRegEmailError('Please enter a valid email.'); return; }
+    if (!/^\+?[0-9]{10,13}$/.test(regPhone.replace(/\s/g, ''))) { setRegPhoneError('Enter a valid 10-digit phone number.'); return; }
     if (regPassword.length < 8) { setRegError('Password must be at least 8 characters.'); return; }
     if (regPassword !== regConfirm) { setRegError('Passwords do not match.'); return; }
 
@@ -197,11 +209,40 @@ function SignInPageInner() {
         return;
       }
       setSentEmail(forgotEmail);
-      setView('check-email');
+      setOtpValue('');
+      setOtpPassword('');
+      setOtpConfirm('');
+      setOtpError('');
+      setOtpSuccess(false);
+      setView('enter-otp');
     } catch {
       setForgotError('Something went wrong. Please try again.');
     } finally {
       setForgotLoading(false);
+    }
+  }
+
+  async function handleResetOtp(e: FormEvent) {
+    e.preventDefault();
+    setOtpError('');
+    if (!/^\d{6}$/.test(otpValue)) { setOtpError('Enter the 6-digit OTP from your email.'); return; }
+    if (otpPassword.length < 8)    { setOtpError('Password must be at least 8 characters.'); return; }
+    if (otpPassword !== otpConfirm) { setOtpError('Passwords do not match.'); return; }
+    setOtpLoading(true);
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: sentEmail, otp: otpValue, password: otpPassword }),
+      });
+      const data = await res.json() as { success?: boolean; error?: string };
+      if (!res.ok) { setOtpError(data.error ?? 'Something went wrong.'); return; }
+      setOtpSuccess(true);
+      setTimeout(() => setView('signin'), 2500);
+    } catch {
+      setOtpError('Something went wrong. Please try again.');
+    } finally {
+      setOtpLoading(false);
     }
   }
 
@@ -353,36 +394,98 @@ function SignInPageInner() {
                   <p style={{ fontSize: '12px', color: '#c0392b', margin: 0, textAlign: 'left' }}>{regEmailError}</p>
                 )}
               </div>
-              <input
-                type="tel"
-                placeholder="Phone number"
-                value={regPhone}
-                onChange={(e) => setRegPhone(e.target.value)}
-                required
-                style={inputStyle}
-                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
-              />
-              <input
-                type="password"
-                placeholder="Password (min 8 characters)"
-                value={regPassword}
-                onChange={(e) => setRegPassword(e.target.value)}
-                required
-                style={inputStyle}
-                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
-              />
-              <input
-                type="password"
-                placeholder="Confirm password"
-                value={regConfirm}
-                onChange={(e) => setRegConfirm(e.target.value)}
-                required
-                style={inputStyle}
-                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <input
+                  type="tel"
+                  placeholder="Phone number (10 digits)"
+                  value={regPhone}
+                  onChange={(e) => { setRegPhone(e.target.value); if (regPhoneError) setRegPhoneError(''); }}
+                  required
+                  style={inputStyle}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--hairline)';
+                    if (regPhone && !/^\+?[0-9]{10,13}$/.test(regPhone.replace(/\s/g, ''))) {
+                      setRegPhoneError('Enter a valid 10-digit phone number.');
+                    }
+                  }}
+                />
+                {regPhoneError && (
+                  <p style={{ fontSize: '12px', color: '#c0392b', margin: 0, textAlign: 'left' }}>{regPhoneError}</p>
+                )}
+              </div>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showRegPassword ? 'text' : 'password'}
+                  placeholder="Password (min 8 characters)"
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  required
+                  style={{ ...inputStyle, paddingRight: '44px' }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegPassword(v => !v)}
+                  style={{
+                    position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', padding: '2px',
+                    color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center',
+                  }}
+                  tabIndex={-1}
+                  aria-label={showRegPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showRegPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showRegConfirm ? 'text' : 'password'}
+                  placeholder="Confirm password"
+                  value={regConfirm}
+                  onChange={(e) => setRegConfirm(e.target.value)}
+                  required
+                  style={{ ...inputStyle, paddingRight: '44px' }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegConfirm(v => !v)}
+                  style={{
+                    position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', cursor: 'pointer', padding: '2px',
+                    color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center',
+                  }}
+                  tabIndex={-1}
+                  aria-label={showRegConfirm ? 'Hide password' : 'Show password'}
+                >
+                  {showRegConfirm ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
               {regError && (
                 <p style={{ fontSize: '13px', color: '#c0392b', margin: 0 }}>{regError}</p>
               )}
@@ -413,7 +516,7 @@ function SignInPageInner() {
                 Forgot password
               </h1>
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-                Enter your email and we&apos;ll send you a reset link.
+                Enter your email and we&apos;ll send you a one-time password.
               </p>
             </div>
 
@@ -439,7 +542,7 @@ function SignInPageInner() {
                 className="btn btn--gold"
                 style={{ width: '100%', opacity: forgotLoading ? 0.7 : 1 }}
               >
-                {forgotLoading ? 'Sending…' : 'Send reset link'}
+                {forgotLoading ? 'Sending…' : 'Send OTP'}
               </button>
             </form>
 
@@ -449,21 +552,77 @@ function SignInPageInner() {
           </>
         )}
 
-        {view === 'check-email' && (
+        {view === 'enter-otp' && (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <h1 className="serif" style={{ fontSize: '28px', fontWeight: 400, letterSpacing: '0.02em', color: 'var(--color-text-primary)' }}>
-                Check your inbox
+                Enter OTP
               </h1>
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-                We&apos;ve sent a password reset link to{' '}
+                We sent a 6-digit code to{' '}
                 <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{sentEmail}</span>.
+                Enter it below along with your new password.
               </p>
             </div>
 
             <div style={{ width: '100%', height: '1px', background: 'var(--hairline)' }} />
 
+            {otpSuccess ? (
+              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, textAlign: 'center' }}>
+                Password updated successfully. Taking you to sign in…
+              </p>
+            ) : (
+              <form onSubmit={handleResetOtp} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="6-digit OTP"
+                  maxLength={6}
+                  value={otpValue}
+                  onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  required
+                  style={{ ...inputStyle, letterSpacing: '0.2em', textAlign: 'center', fontSize: '20px' }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
+                />
+                <input
+                  type="password"
+                  placeholder="New password (min 8 characters)"
+                  value={otpPassword}
+                  onChange={(e) => setOtpPassword(e.target.value)}
+                  required
+                  style={inputStyle}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
+                />
+                <input
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={otpConfirm}
+                  onChange={(e) => setOtpConfirm(e.target.value)}
+                  required
+                  style={inputStyle}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-gold)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; }}
+                />
+                {otpError && (
+                  <p style={{ fontSize: '13px', color: '#c0392b', margin: 0 }}>{otpError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={otpLoading}
+                  className="btn btn--gold"
+                  style={{ width: '100%', opacity: otpLoading ? 0.7 : 1 }}
+                >
+                  {otpLoading ? 'Verifying…' : 'Reset password'}
+                </button>
+              </form>
+            )}
+
             <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: 0 }}>
+              Didn&apos;t receive it?{' '}
+              <LinkButton onClick={() => setView('forgot')}>Resend OTP</LinkButton>
+              {' · '}
               <LinkButton onClick={() => setView('signin')}>Back to sign in</LinkButton>
             </p>
           </>

@@ -192,11 +192,20 @@
   border-color: rgba(201, 168, 76, 0.7);
 }
 
-/* Actions */
+/* Actions — fixed floating bar */
 .actions {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 200;
   display: flex;
   align-items: center;
   gap: 12px;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--hairline, #e5e0d8);
+  border-radius: 100px;
+  padding: 8px 12px 8px 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.08);
 }
 
 .btnSave {

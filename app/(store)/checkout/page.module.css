@@ -140,6 +140,12 @@
   cursor: pointer;
 }
 
+.fieldError {
+  font-size: 12px;
+  color: #c0392b;
+  margin: 4px 0 0;
+}
+
 .error {
   font-size: 13px;
   color: var(--color-accent-temple-red);
@@ -153,6 +159,150 @@
 .nextBtn {
   width: 100%;
   margin-top: 28px;
+}
+
+/* ===== SAVED ADDRESSES ===== */
+.savedAddresses {
+  margin-bottom: 24px;
+}
+
+.savedAddressesTitle {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.addressCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1.5px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.addressCard:hover {
+  border-color: var(--color-accent-gold);
+}
+
+.addressCardSelected {
+  border-color: var(--color-accent-gold);
+  background: rgba(201, 168, 76, 0.05);
+}
+
+.addressRadio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--hairline);
+  flex-shrink: 0;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+}
+
+.addressRadioSelected {
+  border-color: var(--color-accent-gold);
+}
+
+.addressRadioDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent-gold);
+}
+
+.addressCardBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.addressCardLabel {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  margin-bottom: 3px;
+}
+
+.addressCardText {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.addressCardEditing {
+  border-color: var(--color-accent-gold);
+  background: rgba(201, 168, 76, 0.04);
+  cursor: default;
+}
+
+.addressCardActions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  align-items: flex-start;
+}
+
+.addressCardEdit,
+.addressCardDelete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 5px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.addressCardEdit:hover {
+  color: var(--color-accent-gold);
+  background: rgba(201, 168, 76, 0.1);
+}
+
+.addressCardDelete:hover {
+  color: var(--color-accent-temple-red);
+  background: rgba(139, 26, 26, 0.06);
+}
+
+.editFormWrap {
+  width: 100%;
+  padding: 4px 0;
+}
+
+.editActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ===== SAVE ADDRESS ROW ===== */
+.saveRow {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+}
+
+.saveRowCheck {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
 }
 
 /* ===== PAYMENT OPTIONS ===== */

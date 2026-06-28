@@ -28,6 +28,7 @@ export interface ISiteConfig extends Document {
   footerCareLinks: ILinkItem[];
   pageContents: IPageContents;
   heroBanner: IHeroBanner;
+  freeShippingThreshold: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -92,6 +93,11 @@ const SiteConfigSchema = new Schema<ISiteConfig>(
     heroBanner: {
       type: HeroBannerSchema,
       default: () => ({ enabled: false, line1: '', line2: '' }),
+    },
+    freeShippingThreshold: {
+      type: Number,
+      default: 5000,
+      min: 0,
     },
   },
   { timestamps: true }

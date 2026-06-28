@@ -1,7 +1,10 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IAddress {
+  _id?: string;
   label: string;
+  name: string;
+  phone: string;
   line1: string;
   landmark: string;
   city: string;
@@ -27,17 +30,16 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-const AddressSchema = new Schema<IAddress>(
-  {
-    label:    { type: String, default: 'Home' },
-    line1:    { type: String, required: true },
-    landmark: { type: String, default: '' },
-    city:     { type: String, required: true },
-    pincode:  { type: String, required: true },
-    state:    { type: String, required: true },
-  },
-  { _id: false }
-);
+const AddressSchema = new Schema<IAddress>({
+  label:    { type: String, default: 'Home' },
+  name:     { type: String, default: '' },
+  phone:    { type: String, default: '' },
+  line1:    { type: String, required: true },
+  landmark: { type: String, default: '' },
+  city:     { type: String, required: true },
+  pincode:  { type: String, required: true },
+  state:    { type: String, required: true },
+});
 
 const UserSchema = new Schema<IUser>(
   {

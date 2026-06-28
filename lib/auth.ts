@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs';
 import { connectDB } from './db';
 import UserModel from './models/User';
 import AdminModel from './models/Admin';
+import { sendWelcomeEmail } from './email';
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -62,12 +63,13 @@ export const authOptions: NextAuthOptions = {
         await connectDB();
         const existing = await UserModel.findOne({ email: user.email! });
         if (!existing) {
-          await UserModel.create({
+          const newUser = await UserModel.create({
             name:     user.name ?? '',
             email:    user.email!,
             googleId: user.id,
             avatar:   user.image ?? '',
           });
+          sendWelcomeEmail(newUser.email, newUser.name).catch(() => {});
         }
       }
       return true;

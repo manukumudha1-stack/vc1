@@ -5,6 +5,7 @@ import OrderModel from '@/lib/models/Order';
 import ProductModel from '@/lib/models/Product';
 import { formatINR } from '@/lib/utils';
 import styles from './page.module.css';
+import CancelOrder from './CancelOrder';
 
 export const dynamic = 'force-dynamic';
 
@@ -151,6 +152,7 @@ export default async function OrderConfirmationPage({ params }: Props) {
         <Link href="/account" className="btn btn--outline">
           View all orders
         </Link>
+        <CancelOrder orderId={String(order._id)} status={order.status} />
       </div>
     </div>
   );

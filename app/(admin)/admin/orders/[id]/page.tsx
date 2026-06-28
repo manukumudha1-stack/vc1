@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { connectDB } from '@/lib/db';
 import OrderModel from '@/lib/models/Order';
@@ -60,8 +59,6 @@ export default async function OrderDetailPage({ params }: Props) {
 
   return (
     <div className={styles.page}>
-      <Link href="/admin/orders" className={styles.back}>← Back to Orders</Link>
-
       <div className={styles.topbar}>
         <h1 className={styles.pageTitle}>{o.orderNumber}</h1>
         <span className={`badge badge--${o.status}`}>{o.status}</span>

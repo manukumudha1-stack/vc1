@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { auth } from '@/lib/auth';
-import { sendShippedNotification } from '@/lib/notifications';
+import {
+  sendStatusPending,
+  sendStatusConfirmed,
+  sendShippedNotification,
+  sendStatusDelivered,
+  sendStatusCancelled,
+} from '@/lib/notifications';
 import OrderModel from '@/lib/models/Order';
 import type { IOrder, OrderStatus } from '@/lib/models/Order';
 import mongoose from 'mongoose';
@@ -40,9 +46,15 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
-    if (status === 'shipped') {
-      await sendShippedNotification(order as IOrder);
-    }
+    const notifiers: Partial<Record<OrderStatus, (o: IOrder) => Promise<void>>> = {
+      pending:   sendStatusPending,
+      confirmed: sendStatusConfirmed,
+      shipped:   sendShippedNotification,
+      delivered: sendStatusDelivered,
+      cancelled: sendStatusCancelled,
+    };
+    const notify = notifiers[status];
+    if (notify) await notify(order as IOrder);
 
     return NextResponse.json(order);
   } catch (err) {

@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
 import { connectDB } from '@/lib/db';
 import UserModel from '@/lib/models/User';
 import PasswordResetModel from '@/lib/models/PasswordReset';
 import { sendPasswordResetEmail } from '@/lib/email';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const OK = { success: true, message: 'If that email is registered, a reset link has been sent.' };
+const OK = { success: true, message: 'If that email is registered, an OTP has been sent.' };
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,15 +23,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(OK);
     }
 
-    const token = crypto.randomBytes(32).toString('hex');
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
     await PasswordResetModel.findOneAndUpdate(
       { email: email.toLowerCase() },
-      { $set: { token, expiresAt: new Date(Date.now() + 3_600_000), used: false } },
+      { $set: { otp, expiresAt: new Date(Date.now() + 15 * 60 * 1000), used: false, attempts: 0 } },
       { upsert: true, new: true }
     );
 
-    const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
-    sendPasswordResetEmail(email.toLowerCase(), resetUrl).catch(() => {});
+    sendPasswordResetEmail(email.toLowerCase(), otp).catch(() => {});
 
     return NextResponse.json(OK);
   } catch (err) {

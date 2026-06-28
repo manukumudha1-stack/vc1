@@ -8,10 +8,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev          # Start dev server on localhost:3000
 npm run build        # Production build
 npm run lint         # Run ESLint
-npm run seed         # Seed MongoDB (4 collections, 9 products, 10 pincodes, 1 admin)
 npm run test:e2e     # Run Playwright E2E tests (requires running dev server)
 npm run test:e2e:ui  # Playwright interactive UI mode
 ```
+
+### Database seed commands
+
+Run these in order when setting up a fresh database:
+
+```bash
+npm run seed           # 1. Seed core data: 4 collections, 40 products (no images),
+                       #    10 pincodes, 1 admin, 1 customer, site config
+npm run seed:images    # 2. For each product: search Flipkart by name, download images,
+                       #    upload to Cloudinary, update MongoDB. Also randomises prices.
+                       #    Takes ~2 min (rate-limited). Safe to skip if images aren't needed.
+npm run update-prices  # Standalone: set a random price (₹1,000–₹10,000) on every product.
+                       #    Does NOT touch images. Re-run any time to re-randomise prices.
+```
+
+> `seed:images` and `update-prices` require `CLOUDINARY_*` and `MONGODB_URI` in `.env.local`.
 
 ## Environment
 

@@ -16,14 +16,14 @@ function getTransporter() {
   });
 }
 
-export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<void> {
+export async function sendPasswordResetEmail(to: string, otp: string): Promise<void> {
   const transporter = getTransporter();
   if (!transporter) return;
   try {
     await transporter.sendMail({
       from: FROM,
       to,
-      subject: 'Reset your VC password',
+      subject: 'Your VC password reset OTP',
       html: `
         <!DOCTYPE html>
         <html>
@@ -35,9 +35,11 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
                   <tr><td>
                     <div style="font-size:38px;font-weight:400;letter-spacing:0.32em;color:#1a1a1a;line-height:1;margin-bottom:32px;">VC</div>
                     <h1 style="font-size:24px;font-weight:400;letter-spacing:0.02em;color:#1a1a1a;margin:0 0 12px;">Reset your password</h1>
-                    <p style="font-size:14px;color:#6b6b6b;line-height:1.6;margin:0 0 32px;">We received a request to reset the password for your VC account. Click the button below to choose a new password.</p>
-                    <a href="${resetUrl}" style="display:inline-block;background:#c9a84c;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:4px;font-size:13px;font-weight:500;letter-spacing:0.08em;">Reset Password</a>
-                    <p style="font-size:12px;color:#9b9b9b;line-height:1.6;margin:32px 0 0;">This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email.</p>
+                    <p style="font-size:14px;color:#6b6b6b;line-height:1.6;margin:0 0 32px;">Use the OTP below to reset your VC account password. It expires in 15 minutes.</p>
+                    <div style="display:inline-block;background:#f8f5ef;border:1px solid #e8e0d5;border-radius:8px;padding:20px 40px;margin-bottom:32px;">
+                      <span style="font-size:36px;font-weight:600;letter-spacing:0.2em;color:#1a1a1a;">${otp}</span>
+                    </div>
+                    <p style="font-size:12px;color:#9b9b9b;line-height:1.6;margin:0;">If you didn't request a password reset, you can safely ignore this email.</p>
                   </td></tr>
                 </table>
               </td></tr>
@@ -47,7 +49,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string): Prom
       `,
     });
   } catch (err) {
-    console.error('[email] Failed to send password reset email:', err);
+    console.error('[email] Failed to send OTP email:', err);
   }
 }
 

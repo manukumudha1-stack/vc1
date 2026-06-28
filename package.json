@@ -10,7 +10,9 @@
     "seed": "npx tsx scripts/seed.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "download-images": "node scripts/flipkart-downloader.js"
+    "download-images": "node scripts/flipkart-downloader.js",
+    "seed:images": "npx tsx scripts/seed-product-images.ts",
+    "update-prices": "npx tsx scripts/update-prices.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.0",

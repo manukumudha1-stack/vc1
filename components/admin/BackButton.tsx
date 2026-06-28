@@ -9,7 +9,12 @@ export default function BackButton() {
   if (pathname === '/admin') return null;
 
   return (
-    <div style={{ padding: '24px 32px 0' }}>
+    <div style={{
+      position: 'fixed',
+      top: 24,
+      left: 268,
+      zIndex: 200,
+    }}>
       <button
         onClick={() => router.back()}
         aria-label="Go back"
@@ -17,12 +22,14 @@ export default function BackButton() {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 6,
-          background: 'none',
-          border: 'none',
+          background: 'var(--color-surface, #fff)',
+          border: '1px solid var(--hairline, #e5e0d8)',
+          borderRadius: 100,
           cursor: 'pointer',
           color: '#6b7280',
           fontSize: 13,
-          padding: 0,
+          padding: '8px 16px 8px 12px',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.07)',
           transition: 'color 0.15s',
         }}
         onMouseEnter={e => (e.currentTarget.style.color = '#111827')}

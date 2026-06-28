@@ -29,9 +29,10 @@ export default async function SettingsPage() {
   const emptyHeroBanner = { enabled: false, line1: '', line2: '' };
 
   const initialData = {
-    trustItems:   cfg?.trustItems ?? DEFAULT_TRUST,
-    pageContents: { ...emptyPageContents, ...(cfg?.pageContents ?? {}) },
-    heroBanner:   { ...emptyHeroBanner,   ...(cfg?.heroBanner  ?? {}) },
+    trustItems:            cfg?.trustItems ?? DEFAULT_TRUST,
+    pageContents:          { ...emptyPageContents, ...(cfg?.pageContents ?? {}) },
+    heroBanner:            { ...emptyHeroBanner,   ...(cfg?.heroBanner  ?? {}) },
+    freeShippingThreshold: cfg?.freeShippingThreshold ?? 5000,
   };
 
   return (
